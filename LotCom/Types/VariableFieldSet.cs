@@ -134,4 +134,45 @@ public partial class VariableFieldSet(JBKNumber? JBKNumber = null, LotNumber? Lo
         }
         return VariableFields;
     }
+
+    /// <summary>
+    /// Converts the object to a CSV formatted string. Lists each of the non-null properties in the standard order of fields. 
+    /// Can return an empty string if none of the Variable Fields contain non-null values.
+    /// </summary>
+    /// <returns></returns>
+    public string ToCSV()
+    {
+        string CSVLine = "";
+        // only add values if they are non-null
+        if (JBKNumber is not null && !JBKNumber.ToString().Equals(""))
+        {
+            CSVLine += JBKNumber.ToString() + ",";
+        }
+        if (LotNumber is not null && !LotNumber.ToString().Equals(""))
+        {
+            CSVLine += LotNumber.ToString() + ",";
+        }
+        if (DeburrJBKNumber is not null && !DeburrJBKNumber.ToString().Equals(""))
+        {
+            CSVLine += DeburrJBKNumber.ToString() + ",";
+        }
+        if (DieNumber is not null && !DieNumber.ToString().Equals(""))
+        {
+            CSVLine += DieNumber.ToString() + ",";
+        }
+        if (ModelNumber is not null && !ModelNumber.ToString().Equals(""))
+        {
+            CSVLine += ModelNumber.ToString() + ",";
+        }
+        if (HeatNumber is not null && !HeatNumber.ToString().Equals(""))
+        {
+            CSVLine += HeatNumber.ToString() + ",";
+        }
+        // return the final product without a trailing comma 
+        if (CSVLine.Length > 0)
+        {
+            CSVLine = CSVLine[..^1];
+        }
+        return CSVLine;
+    }
 }
