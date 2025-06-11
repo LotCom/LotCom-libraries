@@ -40,6 +40,15 @@ public partial class ModelNumber : ObservableObject
         Code = Value.ToUpper();
     }
 
+    /// <summary>
+    /// Converts the object into a string. Uses the ModelNumber's Code value as the source for this string.
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        return Code;
+    }
+
     // COMPILED REGEX PATTERNS 
 
     [GeneratedRegex(@"^[a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]?$")]
