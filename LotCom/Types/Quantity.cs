@@ -33,4 +33,13 @@ public partial class Quantity : ObservableObject
     {
         return Value > 0;
     }
+
+    /// <summary>
+    /// Converts the object into a string. Uses the Quantity's Value value as the source for this string.
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        return Value.ToString();
+    }
 }
