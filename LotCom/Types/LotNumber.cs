@@ -68,4 +68,13 @@ public partial class LotNumber : ObservableObject
         Literal = Value;
         Formatted = FormatLiteral();
     }
+
+    /// <summary>
+    /// Converts the object into a string. Uses the LotNumber's Literal value as the source for this string.
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        return FormatLiteral();
+    }
 }

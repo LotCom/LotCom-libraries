@@ -46,4 +46,13 @@ public partial class DieNumber : ObservableObject
         }
         Literal = Value;
     }
+
+    /// <summary>
+    /// Converts the object into a string. Uses the DieNumber's Literal value as the source for this string.
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        return Literal.ToString();
+    }
 }

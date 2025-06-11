@@ -46,4 +46,13 @@ public partial class HeatNumber : ObservableObject
         }
         Literal = Value;
     }
+
+    /// <summary>
+    /// Converts the object into a string. Uses the HeatNumber's Literal value as the source for this string.
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        return Literal.ToString();
+    }
 }

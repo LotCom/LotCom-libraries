@@ -75,4 +75,13 @@ public partial class Process(int LineCode, string Line, string Title, Originatio
     /// </summary>
     [ObservableProperty]
     public partial PassThroughType PassThroughType {get; set;} = PassThroughType;
+
+    /// <summary>
+    /// Converts the object into a string. Uses the Process' FullName value as the source for this string.
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        return FullName;
+    }
 }

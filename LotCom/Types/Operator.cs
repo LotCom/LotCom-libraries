@@ -44,6 +44,15 @@ public partial class Operator : ObservableObject
         return IsValidValue(Initials);
     }
 
+    /// <summary>
+    /// Converts the object into a string. Uses the Operator's Initials value as the source for this string.
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        return Initials;
+    }
+
     // COMPILED REGEX PATTERNS
 
     [GeneratedRegex(@"^[a-zA-Z][a-zA-Z][a-zA-Z]?$")]
