@@ -165,15 +165,15 @@ public class ProcessData()
         {
             throw new FormatException($"Could not resolve '{Token}' to a RequiredFields object.");
         }
-        // attempt to retrieve all of the Process objects from PreviousProcesses to validate
-        List<Process?> PreviousProcesses = [];
+        // attempt to retrieve all of the Process full names from PreviousProcesses to validate
+        List<string?> PreviousProcesses = [];
         try
         {
-            if (RawPreviousProcesses[0] is not null)
+            foreach (JToken _process in RawPreviousProcesses)
             {
-                foreach (JToken _process in RawPreviousProcesses)
+                if (_process is not null && !_process.ToString().Equals("null"))
                 {
-                    PreviousProcesses.Add(GetIndividualProcess(_process.ToString()));
+                    PreviousProcesses.Add(_process.ToString());
                 }
             }
         }
