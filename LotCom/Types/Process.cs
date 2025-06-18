@@ -20,10 +20,10 @@ namespace LotCom.Types;
 /// None.
 /// </param>
 /// <param name="PreviousProcesses">
-/// A List of Processes that precede this Process in the Production flow.
-/// Property is [null] for Processes with no previous Processes.
+/// A List of Processes that precede this Process in the Production flow, identified by FullName.
+/// Property is ["null"] for Processes with no previous Processes.
 /// </param>
-public partial class Process(int LineCode, string Line, string Title, OriginationType Type, SerializationMode SerializationMode, List<Part> Parts, RequiredFields RequiredFields, PassThroughType PassThroughType, List<Process?> PreviousProcesses): ObservableObject() 
+public partial class Process(int LineCode, string Line, string Title, OriginationType Type, SerializationMode SerializationMode, List<Part> Parts, RequiredFields RequiredFields, PassThroughType PassThroughType, List<string?> PreviousProcesses): ObservableObject() 
 {
     /// <summary>
     /// [Observable] The four-digit Process Code assigned to the Process.
@@ -85,7 +85,7 @@ public partial class Process(int LineCode, string Line, string Title, Originatio
     /// [null] for Processes with no previous Process.
     /// </summary>
     [ObservableProperty]
-    public partial List<Process?> PreviousProcesses { get; set; } = PreviousProcesses;
+    public partial List<string?> PreviousProcesses { get; set; } = PreviousProcesses;
 
     /// <summary>
     /// Converts the object into a string. Uses the Process' FullName value as the source for this string.
