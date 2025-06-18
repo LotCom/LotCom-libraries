@@ -19,7 +19,11 @@ namespace LotCom.Types;
 /// For Processes with OriginationTypes.Originator:
 /// None.
 /// </param>
-public partial class Process(int LineCode, string Line, string Title, OriginationType Type, SerializationMode SerializationMode, List<Part> Parts, RequiredFields RequiredFields, PassThroughType PassThroughType): ObservableObject() 
+/// <param name="PreviousProcesses">
+/// A List of Processes that precede this Process in the Production flow, identified by FullName.
+/// Property is ["null"] for Processes with no previous Processes.
+/// </param>
+public partial class Process(int LineCode, string Line, string Title, OriginationType Type, SerializationMode SerializationMode, List<Part> Parts, RequiredFields RequiredFields, PassThroughType PassThroughType, List<string?> PreviousProcesses): ObservableObject() 
 {
     /// <summary>
     /// [Observable] The four-digit Process Code assigned to the Process.
@@ -75,6 +79,13 @@ public partial class Process(int LineCode, string Line, string Title, Originatio
     /// </summary>
     [ObservableProperty]
     public partial PassThroughType PassThroughType {get; set;} = PassThroughType;
+
+    /// <summary>
+    /// A List of Processes that precede the Process in the Production Flow.
+    /// [null] for Processes with no previous Process.
+    /// </summary>
+    [ObservableProperty]
+    public partial List<string?> PreviousProcesses { get; set; } = PreviousProcesses;
 
     /// <summary>
     /// Converts the object into a string. Uses the Process' FullName value as the source for this string.
