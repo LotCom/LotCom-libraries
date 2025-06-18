@@ -121,8 +121,9 @@ public class ProcessData()
         JToken RawParts;
         JToken RawRequirements;
         PassThroughType PassThroughType;
+        JToken RawPreviousProcesses;
         // attempt to access each field of Data from the Process Token
-        try 
+        try
         {
             LineCode = int.Parse(Token["LineCode"]!.ToString());
             Line = Token["Line"]!.ToString();
@@ -132,9 +133,10 @@ public class ProcessData()
             RawParts = Token["Parts"]!;
             RawRequirements = Token["Requirements"]!;
             PassThroughType = PassThroughTypeExtensions.FromString(Token["PassThroughHeadingType"]!.ToString());
-        // one of the needed fields was not accessible
-        } 
-        catch 
+            RawPreviousProcesses = Token["PreviousProcesses"]!;
+            // one of the needed fields was not accessible
+        }
+        catch
         {
             throw new FormatException($"Could not resolve '{Token}' to a Process object.");
         }
@@ -163,11 +165,38 @@ public class ProcessData()
         {
             throw new FormatException($"Could not resolve '{Token}' to a RequiredFields object.");
         }
+        // attempt to retrieve all of the Process objects from PreviousProcesses to validate
+        List<Process?> PreviousProcesses = [];
+        try
+        {
+            if (RawPreviousProcesses[0] is not null)
+            {
+                foreach (JToken _process in RawPreviousProcesses)
+                {
+                    PreviousProcesses.Add(GetIndividualProcess(_process.ToString()));
+                }
+            }
+        }
+        catch (SystemException)
+        {
+            throw new FormatException("Could not resolve Process' PreviousProcesses property.");
+        }
         // attempt to construct the Process object from the resolved data
         Process ResolvedProcess;
         try 
         {
-            ResolvedProcess = new Process(LineCode, Line, Title, Type, Mode, Parts, Requirements, PassThroughType);
+            ResolvedProcess = new Process
+            (
+                LineCode,
+                Line,
+                Title,
+                Type,
+                Mode,
+                Parts,
+                Requirements,
+                PassThroughType,
+                PreviousProcesses
+            );
         } 
         catch 
         {
