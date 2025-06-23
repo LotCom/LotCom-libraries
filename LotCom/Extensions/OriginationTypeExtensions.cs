@@ -45,4 +45,21 @@ public static class OriginationTypeExtensions
             throw new ArgumentException($"Cannot convert {String} to an OriginationType.");
         }
     }
+
+    /// <summary>
+    /// Attempts to convert a boolean literal to an OriginationType enum value.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    public static OriginationType FromBoolean(this bool Boolean)
+    {
+        if (Boolean)
+        {
+            return OriginationType.Originator;
+        }
+        else
+        {
+            return OriginationType.PassThrough;
+        }
+    }
 }
