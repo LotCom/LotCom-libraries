@@ -172,7 +172,7 @@ public class ProcessData()
         {
             Mode = SerializationModeExtensions.FromString(Token["Serialization"]!.ToString());
             Type = ProcessTypeExtensions.FromString(Token["Type"]!.ToString());
-            Origination = OriginationTypeExtensions.FromBoolean(bool.Parse(Token["Type"]!.ToString()));
+            Origination = OriginationTypeExtensions.FromBoolean(bool.Parse(Token["Origination"]!.ToString()));
             PassThroughType = PassThroughTypeExtensions.FromString(Token["PassThroughHeadingType"]!.ToString());
             Prints = bool.Parse(Token["Prints"]!.ToString());
             Scans = bool.Parse(Token["Scans"]!.ToString());
