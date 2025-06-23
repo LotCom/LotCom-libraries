@@ -72,31 +72,31 @@ public class ProcessData()
     /// <param name="ParentProcess">The known Process that the Part should belong to.</param>
     /// <returns>A Part object with data resolved from the JToken.</returns>
     /// <exception cref="FormatException"></exception>
-    private Part ResolvePartFromToken(JToken Token, string ParentProcess) 
+    private static Part ResolvePartFromToken(JToken Token, string ParentProcess)
     {
         // hold variables for each Part object property
         string Number;
         string Name;
         ModelNumber Model;
         // attempt to pull the needed fields from the passed JToken
-        try 
+        try
         {
             Number = Token["Number"]!.ToString();
             Name = Token["Name"]!.ToString();
             Model = new ModelNumber(Token["Model"]!.ToString());
-        // one of the needed fields was not accessible
-        } 
-        catch 
+            // one of the needed fields was not accessible
+        }
+        catch
         {
             throw new FormatException($"Could not resolve '{Token}' to a Part object.");
         }
         // attempt to construct the Part object from the resolved data
         Part ResolvedPart;
-        try 
+        try
         {
             ResolvedPart = new Part(ParentProcess, Number, Name, Model);
-        } 
-        catch 
+        }
+        catch
         {
             throw new FormatException($"Could not resolve '{Token}' to a Part object.");
         }
@@ -105,102 +105,149 @@ public class ProcessData()
     }
 
     /// <summary>
+    /// Attempts to construct a List of Part objects from a JToken object.
+    /// Returns null if the captured field (Token) was null.
+    /// </summary>
+    /// <param name="Token"></param>
+    /// <param name="ParentProcess"></param>
+    /// <returns></returns>
+    /// <exception cref="FormatException"></exception>
+    private List<Part>? ResolvePartListFromJSON(JToken Token, string ParentProcess)
+    {
+        if (Token is null)
+        {
+            return null;
+        }
+        // process and add each part to the parts list individually
+            List<Part>? ResolvedParts = [];
+        try
+        {
+            ResolvedParts = Token
+                .Select(x =>
+                ResolvePartFromToken(x, ParentProcess))
+                .ToList();
+            // one of the Tokens could not be resolved to a Part
+        }
+        catch (ArgumentException)
+        {
+            return null;
+        }
+        catch (FormatException _ex)
+        {
+            throw new FormatException($"Could not resolve '{Token}' to a List of Part objects due to the following Part resolution failure: {_ex.Message}");
+        }
+        return ResolvedParts;
+    }
+
+    /// <summary>
     /// Attempts to resolve a Process object from the data in Token.
     /// </summary>
     /// <param name="Token">A JToken object containing Part data.</param>
     /// <returns>A Process object with data resolved from the JToken.</returns>
     /// <exception cref="FormatException"></exception>
-    private Process ResolveProcessFromToken(JToken Token) 
+    private Process ResolveProcessFromToken(JToken Token)
     {
-        // hold variables for each Process object property
+        // attempt to read the basic Process identifier info
         int LineCode;
         string Line;
         string Title;
-        OriginationType Type;
-        SerializationMode Mode;
-        JToken RawParts;
-        JToken RawRequirements;
-        PassThroughType PassThroughType;
-        JToken RawPreviousProcesses;
-        // attempt to access each field of Data from the Process Token
         try
         {
             LineCode = int.Parse(Token["LineCode"]!.ToString());
             Line = Token["Line"]!.ToString();
             Title = Token["Title"]!.ToString();
-            Type = OriginationTypeExtensions.FromString(Token["Type"]!.ToString());
+        }
+        catch (ArgumentNullException)
+        {
+            throw new ArgumentException($"The Token '{Token}' did not contain the identifier fields required for a Process.");
+        }
+        // attempt to resolve the configurations for the Process
+        SerializationMode Mode;
+        ProcessType Type;
+        OriginationType Origination;
+        bool Prints;
+        bool Scans;
+        PassThroughType PassThroughType;
+        try
+        {
             Mode = SerializationModeExtensions.FromString(Token["Serialization"]!.ToString());
-            RawParts = Token["Parts"]!;
-            RawRequirements = Token["Requirements"]!;
+            Type = ProcessTypeExtensions.FromString(Token["Type"]!.ToString());
+            Origination = OriginationTypeExtensions.FromBoolean(bool.Parse(Token["Type"]!.ToString()));
             PassThroughType = PassThroughTypeExtensions.FromString(Token["PassThroughHeadingType"]!.ToString());
-            RawPreviousProcesses = Token["PreviousProcesses"]!;
-            // one of the needed fields was not accessible
+            Prints = bool.Parse(Token["Prints"]!.ToString());
+            Scans = bool.Parse(Token["Scans"]!.ToString());
         }
-        catch
+        catch (ArgumentException)
         {
-            throw new FormatException($"Could not resolve '{Token}' to a Process object.");
+            throw new ArgumentException($"The Token '{Token}' did not contain the configuration fields required for a Process.");
         }
-        // process and add each part to the parts list individually
-        List<Part> Parts = [];
-        string ProcessName = $"{LineCode}-{Line}-{Title}";
-        try 
+        // attempt to resolve all of the Process' printable parts
+        List<Part>? PrintParts;
+        try
         {
-            Parts = RawParts
-                .Select(x =>
-                ResolvePartFromToken(x, ProcessName))
-                .ToList();
-        // one of the Tokens could not be resolved to a Part
-        } 
-        catch (Exception _ex) 
+            PrintParts = ResolvePartListFromJSON(Token["PrintParts"]!, $"{LineCode}-{Line}-{Title}");
+        }
+        catch (FormatException)
         {
-            throw new FormatException($"Could not resolve '{Token}' to a Process object, due to the following Part resolution failure: {_ex.Message}");
+            throw new ArgumentException($"The Token '{Token}' did not contain a Printable Part field required for a Process.");
+        }
+        // attempt to resolve all of the Process' scannable parts
+        List<Part>? ScanParts;
+        try
+        {
+            ScanParts = ResolvePartListFromJSON(Token["ScanParts"]!, $"{LineCode}-{Line}-{Title}");
+        }
+        catch (FormatException)
+        {
+            throw new ArgumentException($"The Token '{Token}' did not contain a Scannable Part field required for a Process.");
         }
         // create a RequiredFields object to parse the Process requirements into
         RequiredFields Requirements;
         try
         {
-            Requirements = RequiredFields.ParseJSON(RawRequirements.ToString());
+            Requirements = RequiredFields.ParseJSON(Token["Requirements"]!.ToString());
         }
         catch
         {
-            throw new FormatException($"Could not resolve '{Token}' to a RequiredFields object.");
+            throw new ArgumentException($"Could not resolve '{Token["Requirements"]}' to a RequiredFields object.");
         }
         // attempt to retrieve all of the Process full names from PreviousProcesses to validate
-        List<string?> PreviousProcesses = [];
+        List<string>? PreviousProcesses = [];
         try
         {
-            foreach (JToken _process in RawPreviousProcesses)
+            foreach (JToken _process in Token["PreviousProcesses"]!)
             {
-                if (_process is not null && !_process.ToString().Equals("null"))
-                {
-                    PreviousProcesses.Add(_process.ToString());
-                }
+                PreviousProcesses.Add(_process.ToString());
             }
         }
         catch (SystemException)
         {
-            throw new FormatException("Could not resolve Process' PreviousProcesses property.");
+            throw new ArgumentException($"Could not resolve '{Token["PreviousProcesses"]}' to a List of strings.");
         }
         // attempt to construct the Process object from the resolved data
         Process ResolvedProcess;
-        try 
+        try
         {
             ResolvedProcess = new Process
             (
                 LineCode,
                 Line,
                 Title,
-                Type,
                 Mode,
-                Parts,
+                Type,
+                Origination,
+                Prints,
+                Scans,
+                PrintParts,
+                ScanParts,
                 Requirements,
                 PassThroughType,
                 PreviousProcesses
             );
-        } 
-        catch 
+        }
+        catch
         {
-            throw new FormatException($"Could not resolve '{Token}' to a Process object.");
+            throw new ArgumentException($"Could not resolve '{Token}' to a Process object.");
         }
         // return the resolved Process object
         return ResolvedProcess;
@@ -481,14 +528,14 @@ public class ProcessData()
     }
 
     /// <summary>
-    /// Retrieves the Process Part list for the specified Process.
+    /// Retrieves the Printable Part list for the specified Process.
     /// </summary>
     /// <param name="ProcessFullName"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="SystemException"></exception>
     /// <exception cref="NullReferenceException"></exception>
-    public List<Part> GetProcessParts(string ProcessFullName) 
+    public List<Part> GetProcessPrintParts(string ProcessFullName) 
     {
         // load the Process' data
         Process Process;
@@ -505,23 +552,23 @@ public class ProcessData()
             throw;
         }
         // no Part data was read
-        if (Process.Parts.Count < 1)
+        if (Process.PrintParts is null || Process.PrintParts.Count < 1)
         {
             throw new NullReferenceException($"No Parts defined for Process '{ProcessFullName}'.");
         } 
         // return the Part list
-        return Process.Parts;
+        return Process.PrintParts;
     }
 
     /// <summary>
-    /// Asynchronously retrieves the Process Part list for the specified Process.
+    /// Asynchronously retrieves the Printable Part list for the specified Process.
     /// </summary>
     /// <param name="ProcessFullName">Process FULL Name ("Code-Title") to retrieve Part Data for.</param>
     /// <returns>A list of Part objects assigned to the Process.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="SystemException"></exception>
     /// <exception cref="NullReferenceException"></exception>
-    public async Task<List<Part>> GetProcessPartsAsync(string ProcessFullName) 
+    public async Task<List<Part>> GetProcessPrintPartsAsync(string ProcessFullName) 
     {
         // load the Process' data
         Process Process;
@@ -538,29 +585,96 @@ public class ProcessData()
             throw;
         }
         // no Part data was read
-        if (Process.Parts.Count < 1)
+        if (Process.PrintParts is null || Process.PrintParts.Count < 1)
         {
             throw new NullReferenceException($"No Parts defined for Process '{ProcessFullName}'.");
         } 
         // return the Part list
-        return Process.Parts;
+        return Process.PrintParts;
+    }
+    
+    /// <summary>
+    /// Retrieves the Scannable Part list for the specified Process.
+    /// </summary>
+    /// <param name="ProcessFullName"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="SystemException"></exception>
+    /// <exception cref="NullReferenceException"></exception>
+    public List<Part> GetProcessScanPrintParts(string ProcessFullName) 
+    {
+        // load the Process' data
+        Process Process;
+        try
+        {
+            Process = GetIndividualProcess(ProcessFullName);
+        }
+        catch (ArgumentException)
+        {
+            throw new ArgumentException($"Process '{ProcessFullName}' is not defined.", nameof(ProcessFullName));
+        }
+        catch (SystemException)
+        {
+            throw;
+        }
+        // no Part data was read
+        if (Process.ScanParts is null || Process.ScanParts.Count < 1)
+        {
+            throw new NullReferenceException($"No Parts defined for Process '{ProcessFullName}'.");
+        } 
+        // return the Part list
+        return Process.ScanParts;
+    }
+
+    /// <summary>
+    /// Asynchronously retrieves the Scannable Part list for the specified Process.
+    /// </summary>
+    /// <param name="ProcessFullName">Process FULL Name ("Code-Title") to retrieve Part Data for.</param>
+    /// <returns>A list of Part objects assigned to the Process.</returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="SystemException"></exception>
+    /// <exception cref="NullReferenceException"></exception>
+    public async Task<List<Part>> GetProcessScanPartsAsync(string ProcessFullName) 
+    {
+        // load the Process' data
+        Process Process;
+        try
+        {
+            Process = await GetIndividualProcessAsync(ProcessFullName);
+        }
+        catch (ArgumentException)
+        {
+            throw new ArgumentException($"Process '{ProcessFullName}' is not defined.", nameof(ProcessFullName));
+        }
+        catch (SystemException)
+        {
+            throw;
+        }
+        // no Part data was read
+        if (Process.ScanParts is null || Process.ScanParts.Count < 1)
+        {
+            throw new NullReferenceException($"No Parts defined for Process '{ProcessFullName}'.");
+        } 
+        // return the Part list
+        return Process.ScanParts;
     }
 
     /// <summary>
     /// Queries for a Part matching PartNumber in ProcessFullName's Part data.
+    /// Only checks in the Process' PrintParts list.
     /// </summary>
     /// <param name="ProcessFullName">The FULL Name ("Code-Title") of the Process to query from.</param>
     /// <param name="PartNumber">The Part Number to query for within ProcessFullName's data.</param>
     /// <returns>A JToken object containing the Part data for PartNumber.</returns>
     /// <exception cref="SystemException"></exception>
     /// <exception cref="ArgumentException"></exception>
-    public Part GetProcessPartData(string ProcessFullName, string PartNumber) 
+    public Part GetProcessPartData(string ProcessFullName, string PartNumber)
     {
         // retrieve the Process' Part list
         List<Part> ProcessParts;
         try
         {
-            ProcessParts = GetProcessParts(ProcessFullName);
+            ProcessParts = GetProcessPrintParts(ProcessFullName);
         }
         catch (SystemException)
         {
@@ -568,14 +682,14 @@ public class ProcessData()
         }
         // attempt to access the specific Part
         Part? SelectedPart;
-        try 
+        try
         {
             SelectedPart = ProcessParts
                 .Where(x => x.PartNumber
                 .Equals(PartNumber))
                 .First();
-        // Part was not found in the Process' Part list
-        } 
+            // Part was not found in the Process' Part list
+        }
         catch (ArgumentNullException)
         {
             throw new ArgumentException($"Part '{PartNumber}' not defined for Process '{ProcessFullName}'.", nameof(PartNumber));
@@ -600,7 +714,7 @@ public class ProcessData()
             List<Part> ProcessParts;
             try
             {
-                ProcessParts = await GetProcessPartsAsync(ProcessFullName);
+                ProcessParts = await GetProcessPrintPartsAsync(ProcessFullName);
             }
             catch (SystemException)
             {
