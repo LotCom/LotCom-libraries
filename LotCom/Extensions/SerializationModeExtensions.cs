@@ -42,7 +42,7 @@ public static class SerializationModeExtensions
         {
             return SerializationMode.Lot;
         }
-        else if (String.Equals(""))
+        else if (String.Equals("") || String.Equals("None"))
         {
             return SerializationMode.None;
         }
