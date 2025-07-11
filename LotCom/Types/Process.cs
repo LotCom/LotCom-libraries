@@ -1,5 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using LotCom.Database;
 using LotCom.Enums;
+using LotCom.Exceptions;
 
 namespace LotCom.Types;
 
@@ -27,86 +29,86 @@ namespace LotCom.Types;
 /// A List of Processes that precede this Process in the Production flow, identified by FullName.
 /// Property is ["null"] for Processes with no previous Processes.
 /// </param>
-public partial class Process(int LineCode, string Line, string Title, SerializationMode Serialization, ProcessType Type,  OriginationType Origination, bool Prints, bool Scans, List<Part>? PrintParts, List<Part>? ScanParts, RequiredFields RequiredFields, PassThroughType PassThroughType, List<string>? PreviousProcesses): ObservableObject() 
+public partial class Process(int LineCode, string Line, string Title, SerializationMode Serialization, ProcessType Type, OriginationType Origination, bool Prints, bool Scans, List<Part>? PrintParts, List<Part>? ScanParts, RequiredFields RequiredFields, PassThroughType PassThroughType, List<string>? PreviousProcesses) : ObservableObject()
 {
     /// <summary>
     /// [Observable] The four-digit Process Code assigned to the Process.
     /// </summary>
     [ObservableProperty]
-    public partial int LineCode {get; set;} = LineCode;
+    public partial int LineCode { get; set; } = LineCode;
 
     /// <summary>
     /// [Observable] The Process' parent Line.
     /// </summary>
     [ObservableProperty]
-    public partial string Line {get; set;} = Line;
+    public partial string Line { get; set; } = Line;
 
     /// <summary>
     /// [Observable] The linguistic title (descriptor) assigned to the Process.
     /// </summary>
     [ObservableProperty]
-    public partial string Title {get; set;} = Title;
+    public partial string Title { get; set; } = Title;
 
     /// <summary>
     /// [Observable] A reference-friendly Process name in the form of "Code-Title".
     /// </summary>
     [ObservableProperty]
-    public partial string FullName {get; set;} = $"{LineCode}-{Line}-{Title}";
+    public partial string FullName { get; set; } = $"{LineCode}-{Line}-{Title}";
 
     /// <summary>
     /// The Process' serialization mode (JBK || Lot).
     /// </summary>
     [ObservableProperty]
-    public partial SerializationMode Serialization {get; set;} = Serialization;
+    public partial SerializationMode Serialization { get; set; } = Serialization;
 
     /// <summary>
     /// The Type of processing that occurs at the Process.
     /// </summary>
     [ObservableProperty]
-    public partial ProcessType Type {get; set;} = Type;
+    public partial ProcessType Type { get; set; } = Type;
 
     /// <summary>
     /// [Observable] The Process' serialization type (Originator || Pass-through).
     /// </summary>
     [ObservableProperty]
-    public partial OriginationType Origination {get; set;} = Origination;
+    public partial OriginationType Origination { get; set; } = Origination;
 
     /// <summary>
     /// Whether the Process Prints Labels or not.
     /// </summary>
     [ObservableProperty]
-    public partial bool Prints {get; set;} = Prints;
+    public partial bool Prints { get; set; } = Prints;
 
     /// <summary>
     /// Whether the Process Scans Labels or not.
     /// </summary>
     [ObservableProperty]
-    public partial bool Scans {get; set;} = Scans;
+    public partial bool Scans { get; set; } = Scans;
 
     /// <summary>
     /// The Parts that can be produced and have Labels printed by the Process.
     /// </summary>
     [ObservableProperty]
-    public partial List<Part>? PrintParts {get; set;} = PrintParts;
+    public partial List<Part>? PrintParts { get; set; } = PrintParts;
 
     /// <summary>
     /// The Parts that can be consumed and Scanned by the Process.
     /// </summary>
     [ObservableProperty]
-    public partial List<Part>? ScanParts {get; set;} = ScanParts;
+    public partial List<Part>? ScanParts { get; set; } = ScanParts;
 
     /// <summary>
     /// [Observable] The Production Data fields required at this Process.
     /// </summary>
     [ObservableProperty]
-    public partial RequiredFields RequiredFields {get; set;} = RequiredFields;
+    public partial RequiredFields RequiredFields { get; set; } = RequiredFields;
 
     /// <summary>
     /// [Observable] For Processes with Type = "Pass-through", the type of Serialization Header to apply to the Label; "JBK" or "Lot".
     /// For Processes with Type = "Origination", null.
     /// </summary>
     [ObservableProperty]
-    public partial PassThroughType PassThroughType {get; set;} = PassThroughType;
+    public partial PassThroughType PassThroughType { get; set; } = PassThroughType;
 
     /// <summary>
     /// A List of Processes that precede the Process in the Production Flow.
@@ -122,5 +124,34 @@ public partial class Process(int LineCode, string Line, string Title, Serializat
     public override string ToString()
     {
         return FullName;
+    }
+
+    /// <summary>
+    /// Retrieves the FIRST defined previous Process.
+    /// </summary>
+    /// <returns>A 'Process' object or null if no previous Processes are defined.</returns>
+    /// <exception cref="DatabaseException"></exception>
+    public async Task<Process?> GetPreviousProcess()
+    {
+        Process? PreviousProcess;
+        // confirm that PreviousProcesses is not null
+        if (PreviousProcesses is not null && PreviousProcesses.Count > 0)
+        {
+            // attempt to read the first previous Process from the Database
+            try
+            {
+                PreviousProcess = await new ProcessData().GetIndividualProcessAsync(PreviousProcesses[0]);
+            }
+            catch (SystemException _ex)
+            {
+                throw new DatabaseException($"Failed to read the Process '{PreviousProcesses[0]}' from the Database.", _ex);
+            }
+        }
+        // no previous Process configured
+        else
+        {
+            PreviousProcess = null;
+        }
+        return PreviousProcess;
     }
 }
