@@ -175,4 +175,101 @@ public partial class VariableFieldSet(JBKNumber? JBKNumber = null, LotNumber? Lo
         }
         return CSVLine;
     }
+
+    /// <summary>
+    /// Attempts to convert a
+    /// </summary>
+    /// <param name="StringFields"></param>
+    /// <param name="Required"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    public static VariableFieldSet ParseCSV(string[] StringFields, RequiredFields Required)
+    {
+        // confirm that the passed field set is not too long
+        if (StringFields.Length > 6)
+        {
+            throw new ArgumentException($"VariableFieldSets cannot exceed 6 fields (passed {StringFields.Length}).");
+        }
+        int Offset = 0;
+        VariableFieldSet ParsedSet = new VariableFieldSet();
+        // parse a JBK # if required
+        if (Required.JBKNumber)
+        {
+            try
+            {
+                ParsedSet.JBKNumber = new JBKNumber(int.Parse(StringFields[Offset]));
+                Offset += 1;
+            }
+            catch (ArgumentException)
+            {
+                throw new ArgumentException($"Failed to create a JBK Number from the required value {StringFields[Offset]}.");
+            }
+        }
+        // parse a Lot # if required
+        if (Required.LotNumber)
+        {
+            try
+            {
+                ParsedSet.LotNumber = new LotNumber(int.Parse(StringFields[Offset]));
+                Offset += 1;
+            }
+            catch (ArgumentException)
+            {
+                throw new ArgumentException($"Failed to create a Lot Number from the required value {StringFields[Offset]}.");
+            }
+        }
+        // parse a Deburr JBK # if required
+        if (Required.DeburrJBKNumber)
+        {
+            try
+            {
+                ParsedSet.DeburrJBKNumber = new JBKNumber(int.Parse(StringFields[Offset]));
+                Offset += 1;
+            }
+            catch (ArgumentException)
+            {
+                throw new ArgumentException($"Failed to create a JBK Number from the required value {StringFields[Offset]}.");
+            }
+        }
+        // parse a Die # if required
+        if (Required.DieNumber)
+        {
+            try
+            {
+                ParsedSet.DieNumber = new DieNumber(int.Parse(StringFields[Offset]));
+                Offset += 1;
+            }
+            catch (ArgumentException)
+            {
+                throw new ArgumentException($"Failed to create a Die Number from the required value {StringFields[Offset]}.");
+            }
+        }
+        // parse a Model # if required
+        if (Required.ModelNumber)
+        {
+            try
+            {
+                ParsedSet.ModelNumber = new ModelNumber(StringFields[Offset]);
+                Offset += 1;
+            }
+            catch (ArgumentException)
+            {
+                throw new ArgumentException($"Failed to create a Model Number from the required value {StringFields[Offset]}.");
+            }
+        }
+        // parse a Heat # if required
+        if (Required.HeatNumber)
+        {
+            try
+            {
+                ParsedSet.HeatNumber = new HeatNumber(int.Parse(StringFields[Offset]));
+                Offset += 1;
+            }
+            catch (ArgumentException)
+            {
+                throw new ArgumentException($"Failed to create a Heat Number from the required value {StringFields[Offset]}.");
+            }
+        }
+        return ParsedSet;
+    }
 }
