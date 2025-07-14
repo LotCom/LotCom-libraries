@@ -55,7 +55,66 @@ public class Scan(Process Process, DateTime ScanTime, IPAddress ScanAddress, Par
     /// <returns></returns>
     /// <exception cref="DatabaseException"></exception>
     /// <exception cref="FormatException"></exception>
-    public static async Task<Scan> Parse(string EntryString)
+    public static Scan Parse(string EntryString)
+    {
+        // split the string to separate fields
+        string[] SplitEntry = EntryString.Split(",");
+        // open a new Database accessor
+        ProcessData Db = new ProcessData();
+        // asynchronously request the Process and Part from the database
+        Process Process;
+        Part Part;
+        try
+        {
+            Process = Db.GetIndividualProcess(SplitEntry[0]);
+            Part = Db.GetProcessPartData(SplitEntry[0], SplitEntry[3]);
+        }
+        catch (SystemException _ex)
+        {
+            throw new DatabaseException($"Failed to get the requested Process '{SplitEntry[0]}' and/or Part '{SplitEntry[3]}'.", _ex);
+        }
+        // parse the Scan Time and the IP Address
+        DateTime ScanTime = DateTime.ParseExact(SplitEntry[1], "MM/dd/yyyy-HH:mm:ss", CultureInfo.InvariantCulture);
+        IPAddress ScanAddress = IPAddress.Parse(SplitEntry[2]);
+        // parse any PartialDataSets, including the primary set
+        List<PartialDataSet?> Partials = PartialDataSet.Parse(SplitEntry[5], SplitEntry[^2], SplitEntry[^1])!;
+        // ensure at least one PartialDataSet (primary) exists
+        if (Partials.Count < 1 || Partials[0] is null)
+        {
+            throw new FormatException($"Could not parse the Primary Quantity, Shift, and Operator set from '{EntryString}'.");
+        }
+        // fill Partials to create a full set of Primary and two additional PartialDataSets
+        while (Partials.Count < 3)
+        {
+            Partials.Add(null);
+        }
+        // parse the VariableFieldSet fields
+        VariableFieldSet VariableFields = VariableFieldSet.ParseCSV(SplitEntry[6..^3], Process.RequiredFields);
+        // parse the production date
+        DateTime ProductionDate = DateTime.ParseExact(SplitEntry[^3], "MM/dd/yyyy-HH:mm:ss", CultureInfo.InvariantCulture);
+        // construct and return the Scan object
+        return new Scan
+        (
+            Process: Process,
+            ScanTime: ScanTime,
+            ScanAddress: ScanAddress,
+            Part: Part,
+            PrimaryDataSet: Partials[0]!,
+            VariableFields: VariableFields,
+            ProductionDate: ProductionDate,
+            FirstPartialDataSet: Partials[1],
+            SecondPartialDataSet: Partials[2]
+        );
+    }
+
+    /// <summary>
+    /// Asynchronously parses an existing Scan entry (EntryString) from the database into a Scan object.
+    /// </summary>
+    /// <param name="EntryString"></param>
+    /// <returns></returns>
+    /// <exception cref="DatabaseException"></exception>
+    /// <exception cref="FormatException"></exception>
+    public static async Task<Scan> ParseAsync(string EntryString)
     {
         // split the string to separate fields
         string[] SplitEntry = EntryString.Split(",");
