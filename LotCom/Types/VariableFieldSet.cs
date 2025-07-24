@@ -10,9 +10,8 @@ namespace LotCom.Types;
 /// <param name="LotNumber"></param>
 /// <param name="DeburrJBKNumber"></param>
 /// <param name="DieNumber"></param>
-/// <param name="ModelNumber"></param>
 /// <param name="HeatNumber"></param>
-public partial class VariableFieldSet(JBKNumber? JBKNumber = null, LotNumber? LotNumber = null, JBKNumber? DeburrJBKNumber = null, DieNumber? DieNumber = null, ModelNumber? ModelNumber = null, HeatNumber? HeatNumber = null) : ObservableObject()
+public partial class VariableFieldSet(JBKNumber? JBKNumber = null, LotNumber? LotNumber = null, JBKNumber? DeburrJBKNumber = null, DieNumber? DieNumber = null, HeatNumber? HeatNumber = null) : ObservableObject()
 {
     [ObservableProperty]
     public partial JBKNumber? JBKNumber { get; set; } = JBKNumber;
@@ -25,9 +24,6 @@ public partial class VariableFieldSet(JBKNumber? JBKNumber = null, LotNumber? Lo
 
     [ObservableProperty]
     public partial DieNumber? DieNumber { get; set; } = DieNumber;
-
-    [ObservableProperty]
-    public partial ModelNumber? ModelNumber { get; set; } = ModelNumber;
 
     [ObservableProperty]
     public partial HeatNumber? HeatNumber { get; set; } = HeatNumber;
@@ -55,10 +51,6 @@ public partial class VariableFieldSet(JBKNumber? JBKNumber = null, LotNumber? Lo
         if (DieNumber is not null)
         {
             JSON += $"\"DieNumber\":\"{DieNumber!.Literal}\",";
-        }
-        if (ModelNumber is not null)
-        {
-            JSON += $"\"ModelNumber\":\"{ModelNumber!.Code}\",";
         }
         if (HeatNumber is not null)
         {
@@ -118,14 +110,6 @@ public partial class VariableFieldSet(JBKNumber? JBKNumber = null, LotNumber? Lo
         }
         try
         {
-            VariableFields.ModelNumber = new ModelNumber(JSON["ModelNumber"]!.ToString());
-        }
-        catch
-        {
-            VariableFields.ModelNumber = null;
-        }
-        try
-        {
             VariableFields.HeatNumber = new HeatNumber(int.Parse(JSON["HeatNumber"]!.ToString()));
         }
         catch
@@ -159,10 +143,6 @@ public partial class VariableFieldSet(JBKNumber? JBKNumber = null, LotNumber? Lo
         if (DieNumber is not null && !DieNumber.ToString().Equals(""))
         {
             CSVLine += DieNumber.ToString() + ",";
-        }
-        if (ModelNumber is not null && !ModelNumber.ToString().Equals(""))
-        {
-            CSVLine += ModelNumber.ToString() + ",";
         }
         if (HeatNumber is not null && !HeatNumber.ToString().Equals(""))
         {
@@ -242,19 +222,6 @@ public partial class VariableFieldSet(JBKNumber? JBKNumber = null, LotNumber? Lo
             catch (ArgumentException)
             {
                 throw new ArgumentException($"Failed to create a Die Number from the required value {StringFields[Offset]}.");
-            }
-        }
-        // parse a Model # if required
-        if (Required.ModelNumber)
-        {
-            try
-            {
-                ParsedSet.ModelNumber = new ModelNumber(StringFields[Offset]);
-                Offset += 1;
-            }
-            catch (ArgumentException)
-            {
-                throw new ArgumentException($"Failed to create a Model Number from the required value {StringFields[Offset]}.");
             }
         }
         // parse a Heat # if required
