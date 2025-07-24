@@ -9,9 +9,8 @@ namespace LotCom.Types;
 /// <param name="LotNumber"></param>
 /// <param name="DeburrJBKNumber"></param>
 /// <param name="DieNumber"></param>
-/// <param name="ModelNumber"></param>
 /// <param name="HeatNumber"></param>
-public partial class RequiredFields(bool JBKNumber = false, bool LotNumber = false, bool DeburrJBKNumber = false, bool DieNumber = false, bool ModelNumber = false, bool HeatNumber = false) : ObservableObject()
+public partial class RequiredFields(bool JBKNumber = false, bool LotNumber = false, bool DeburrJBKNumber = false, bool DieNumber = false, bool HeatNumber = false) : ObservableObject()
 {
     [ObservableProperty]
     public partial bool JBKNumber { get; set; } = JBKNumber;
@@ -24,9 +23,6 @@ public partial class RequiredFields(bool JBKNumber = false, bool LotNumber = fal
 
     [ObservableProperty]
     public partial bool DieNumber { get; set; } = DieNumber;
-
-    [ObservableProperty]
-    public partial bool ModelNumber { get; set; } = ModelNumber;
 
     [ObservableProperty]
     public partial bool HeatNumber { get; set; } = HeatNumber;
@@ -55,10 +51,6 @@ public partial class RequiredFields(bool JBKNumber = false, bool LotNumber = fal
         if (Line.Contains("DieNumber"))
         {
             Requirements.DieNumber = true;
-        }
-        if (Line.Contains("ModelNumber"))
-        {
-            Requirements.ModelNumber = true;
         }
         if (Line.Contains("HeatNumber"))
         {
