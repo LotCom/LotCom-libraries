@@ -32,6 +32,12 @@ public partial class DieNumber : ObservableObject
     public partial char? SplitIdentifier { get; set; }
 
     /// <summary>
+    /// A formatted version of the Die Number's literal value with the optional Split Identifier code.
+    /// </summary>
+    [ObservableProperty]
+    public partial string Formatted { get; set; }
+
+    /// <summary>
     /// Confirms that Value is a valid value for this datatype.
     /// </summary>
     /// <param name="Value"></param>
@@ -54,6 +60,20 @@ public partial class DieNumber : ObservableObject
         // is value's integer segment valid?
         int IntSegment = int.Parse(Value.Replace("A", "").Replace("B", ""));
         return IntSegment <= MaxValue && IntSegment >= MinValue;
+    }
+
+    /// <summary>
+    /// Formats the current Literal value according to the Datatype's formatting requirements.
+    /// </summary>
+    /// <returns>The Literal value as a Formatted string.</returns>
+    private string FormatLiteral()
+    {
+        string FormattedLiteral = Literal.ToString();
+        if (SplitIdentifier is not null)
+        {
+            FormattedLiteral += SplitIdentifier;
+        }
+        return FormattedLiteral;
     }
 
     /// <summary>
@@ -83,6 +103,8 @@ public partial class DieNumber : ObservableObject
         {
             SplitIdentifier = null;
         }
+        // save the formatted value
+        Formatted = FormatLiteral();
     }
 
     /// <summary>
@@ -93,12 +115,7 @@ public partial class DieNumber : ObservableObject
     /// <returns></returns>
     public override string ToString()
     {
-        string Full = Literal.ToString();
-        if (SplitIdentifier is not null)
-        {
-            Full += SplitIdentifier;
-        }
-        return Full;
+        return FormatLiteral();
     }
     
     // Compiled Regexs
