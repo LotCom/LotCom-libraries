@@ -102,7 +102,7 @@ public partial class VariableFieldSet(JBKNumber? JBKNumber = null, LotNumber? Lo
         }
         try
         {
-            VariableFields.DieNumber = new DieNumber(int.Parse(JSON["DieNumber"]!.ToString()));
+            VariableFields.DieNumber = new DieNumber(JSON["DieNumber"]!.ToString());
         }
         catch
         {
@@ -216,7 +216,7 @@ public partial class VariableFieldSet(JBKNumber? JBKNumber = null, LotNumber? Lo
         {
             try
             {
-                ParsedSet.DieNumber = new DieNumber(int.Parse(StringFields[Offset]));
+                ParsedSet.DieNumber = new DieNumber(StringFields[Offset]);
                 Offset += 1;
             }
             catch (ArgumentException)
