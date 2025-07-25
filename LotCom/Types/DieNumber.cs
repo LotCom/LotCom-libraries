@@ -97,7 +97,7 @@ public partial class DieNumber : ObservableObject
         }
         else if (Value.Contains('B'))
         {
-            SplitIdentifier = 'A';
+            SplitIdentifier = 'B';
         }
         else
         {
