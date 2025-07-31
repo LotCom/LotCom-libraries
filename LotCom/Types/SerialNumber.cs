@@ -37,18 +37,22 @@ public class SerialNumber(SerializationMode Mode, Part Part, int Value)
     {
         // enforce leading zero-padding format
         string FormattedNumber = Value.ToString();
-        if (Mode == SerializationMode.JBK) 
+        if (Mode == SerializationMode.None)
+        {
+            return FormattedNumber;
+        }
+        else if (Mode == SerializationMode.JBK)
         {
             // enforce 3-length format
-            while (FormattedNumber.Length < 3) 
+            while (FormattedNumber.Length < 3)
             {
                 FormattedNumber = $"0{FormattedNumber}";
             }
-        } 
-        else 
+        }
+        else
         {
             // enforce 9-length format
-            while (FormattedNumber.Length < 9) 
+            while (FormattedNumber.Length < 9)
             {
                 FormattedNumber = $"0{FormattedNumber}";
             }
@@ -61,8 +65,8 @@ public class SerialNumber(SerializationMode Mode, Part Part, int Value)
     /// </summary>
     /// <returns></returns>
     public string ToJSON()
-    {   
-        return 
+    {
+        return
             "{" +
                 $"\"Mode\":\"{Mode}\"," +
                 "\"Part\":{" +
