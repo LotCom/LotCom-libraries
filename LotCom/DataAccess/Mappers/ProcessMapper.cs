@@ -15,11 +15,12 @@ public static class ProcessMapper
     /// </summary>
     /// <param name="Dto"></param>
     /// <returns></returns>
-    public static async Task<Process> DtoToModel(ProcessDto Dto)
+    public static async Task<Process> DtoToModel(ProcessDto Dto, UserAgent Agent)
     {
         // map native/simple typed properties
         Process Model = new Process
         (
+            Dto.Id,
             Dto.LineCode,
             Dto.LineName,
             Dto.Title,
@@ -41,31 +42,39 @@ public static class ProcessMapper
             PassThroughTypeExtensions.FromString(Dto.PassThroughType!),
             null
         );
-        // retrieve printable parts for the Process
+        // retrieve printable part ids for the Process
         if (Model.Prints)
         {
-            Model.PrintParts = await PartService.GetPrintedByProcess(Dto.Id);
+            IEnumerable<Part>? PartsFromDatabase = await PartService.GetPrintedByProcess(Dto.Id, Agent);
+            if (PartsFromDatabase is null)
+            {
+                Model.PrintParts = [];
+            }
+            else
+            {
+                Model.PrintParts = PartsFromDatabase.Select(x => x.Id);
+            }
         }
-        // retrieve scannable parts for the Process
+        // retrieve scannable part ids for the Process
         if (Model.Scans)
         {
-            Model.ScanParts = await PartService.GetScannedByProcess(Dto.Id);
+            IEnumerable<Part>? PartsFromDatabase = await PartService.GetScannedByProcess(Dto.Id, Agent);
+            if (PartsFromDatabase is null)
+            {
+                Model.ScanParts = [];
+            }
+            else
+            {
+                Model.ScanParts = PartsFromDatabase.Select(x => x.Id);
+            }
         }
         // retrieve any previous Processes for the Process
         if (Dto.Previous1 is not null)
         {
-            Process? Previous1 = await ProcessService.Get((int)Dto.Previous1);
-            if (Previous1 is not null)
-            {
-                Model.PreviousProcesses = [Previous1.FullName];
-            }
+            Model.PreviousProcesses = [(int)Dto.Previous1];
             if (Dto.Previous2 is not null)
             {
-                Process? Previous2 = await ProcessService.Get((int)Dto.Previous2);
-                if (Previous2 is not null)
-                {
-                    Model.PreviousProcesses = [Previous2.FullName];
-                }
+                Model.PreviousProcesses = Model.PreviousProcesses.Append((int)Dto.Previous2);
             }
         }
         return Model;
