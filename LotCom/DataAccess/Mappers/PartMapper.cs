@@ -1,6 +1,4 @@
 using LotCom.DataAccess.Models;
-using LotCom.DataAccess.Services;
-using LotCom.Exceptions;
 using LotCom.Types;
 
 namespace LotCom.DataAccess.Mappers;
@@ -15,16 +13,12 @@ public static class PartMapper
     /// </summary>
     /// <param name="Dto"></param>
     /// <returns></returns>
-    public static async Task<Part> DtoToModel(PartDto Dto)
+    public static Part DtoToModel(PartDto Dto)
     {
-        Process? ModelProcess = await ProcessService.Get(Dto.PrintedBy);
-        if (ModelProcess is null)
-        {
-            throw new DatabaseException("Could not retrieve the Part's parent Process (printed by).");
-        }
         return new Part
         (
-            ModelProcess.FullName,
+            Dto.Id,
+            Dto.PrintedBy,
             Dto.Number,
             Dto.Name,
             new ModelNumber(Dto.ModelCode)

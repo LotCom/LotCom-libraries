@@ -17,11 +17,11 @@ public static class PrintMapper
     /// </summary>
     /// <param name="Dto"></param>
     /// <returns></returns>
-    public static async Task<Print> DtoToModel(PrintDto Dto)
+    public static async Task<Print> DtoToModel(PrintDto Dto, UserAgent Agent)
     {
         // retrieve the Process and Part from the Database
-        Process? ModelProcess = await ProcessService.Get(Dto.ProcessId);
-        Part? ModelPart = await PartService.Get(Dto.PartId);
+        Process? ModelProcess = await ProcessService.Get(Dto.ProcessId, Agent);
+        Part? ModelPart = await PartService.Get(Dto.PartId, Agent);
         if (ModelProcess is null)
         {
             throw new DatabaseException("Could not retrieve the Process referenced by the Print.");
@@ -90,6 +90,7 @@ public static class PrintMapper
         // construct and return new Print Model
         return new Print
         (
+            Dto.Id,
             ModelProcess,
             ModelPart,
             ModelVariableFields,
