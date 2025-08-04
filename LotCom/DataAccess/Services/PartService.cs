@@ -1,4 +1,3 @@
-using System.Net.Http.Headers;
 using LotCom.DataAccess.Mappers;
 using LotCom.DataAccess.Models;
 using LotCom.Types;
@@ -9,73 +8,93 @@ namespace LotCom.DataAccess.Services;
 public static class PartService
 {
     /// <summary>
-    /// Configures an HTTP request/response client for this application.
+    /// Retrieves a single Part from the database using its Id.
     /// </summary>
-    private static HttpClient ConfigureHttp()
+    /// <param name="id">The Part object's Id number.</param>
+    /// <returns></returns>
+    /// <exception cref="HttpRequestException"></exception>
+    /// <exception cref="JsonException"></exception>
+    public static async Task<Part?> Get(int id, UserAgent Agent)
     {
-        HttpClient Client = new HttpClient();
-        // cleans the HttpClient's accepted response header configuration
-        Client.DefaultRequestHeaders.Accept.Clear();
-        // adds the default API response header to the accepted response configuration
-        Client.DefaultRequestHeaders.Accept.Add
-        (
-            new MediaTypeWithQualityHeaderValue
-            (
-                "application/json"
-            )
-        );
-        // adds the default UA header for custom apps (ex. LotCom Printer 1.0.0)
-        Client.DefaultRequestHeaders.Add("User-Agent", "LotComPrinter/1.0.0 (Windows; .NET)");
-        return Client;
-    }
-
-    public static async Task<Part?> Get(int id)
-    {
-        HttpClient Client = ConfigureHttp();
-        string? Response = await Client.GetStringAsync($"http://localhost:60000/Part/{id}");
-        if (Response is null)
+        // configure a new HttpClient and execute the API call
+        HttpClient Client = HttpClientFactory.Create(Agent);
+        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Part/{id}");
+        // ensure that the response was OK and retrieve its contents as JSON
+        try
         {
-            return null;
+            Response.EnsureSuccessStatusCode();
         }
-        PartDto? Dto = JsonConvert.DeserializeObject<PartDto>(Response);
+        catch (HttpRequestException)
+        {
+            throw;
+        }
+        string JSON = await Response.Content.ReadAsStringAsync();
+        // deserialize the JSON response and map the data from DTO to Model
+        PartDto? Dto = JsonConvert.DeserializeObject<PartDto>(JSON);
         if (Dto is null)
         {
             throw new JsonException("Could not deserialize a Part from the response.");
         }
-        return await PartMapper.DtoToModel(Dto);
+        return PartMapper.DtoToModel(Dto);
     }
 
-
-    public static async Task<List<Part>?> GetPrintedByProcess(int id)
+    /// <summary>
+    /// Retrieves all Part objects printed by a Process, indicated by Id.
+    /// </summary>
+    /// <param name="id">The Id of the Process to collect printable Parts for.</param>
+    /// <returns></returns>
+    /// <exception cref="JsonException"></exception>
+    public static async Task<IEnumerable<Part>?> GetPrintedByProcess(int ProcessId, UserAgent Agent)
     {
-        HttpClient Client = ConfigureHttp();
-        string? Response = await Client.GetStringAsync($"http://localhost:60000/Part/{id}");
-        if (Response is null)
+        // configure a new HttpClient and execute the API call
+        HttpClient Client = HttpClientFactory.Create(Agent);
+        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Part/printedById={ProcessId}");
+        // ensure that the response was OK and retrieve its contents as JSON
+        try
         {
-            return null;
+            Response.EnsureSuccessStatusCode();
         }
-        PartDto? Dto = JsonConvert.DeserializeObject<PartDto>(Response);
-        if (Dto is null)
+        catch (HttpRequestException)
         {
-            throw new JsonException("Could not deserialize a Part from the response.");
+            throw;
         }
-        return [await PartMapper.DtoToModel(Dto)];
+        string JSON = await Response.Content.ReadAsStringAsync();
+        // deserialize the JSON response and map the data from DTOs to Models
+        IEnumerable<PartDto>? Dtos = JsonConvert.DeserializeObject<IEnumerable<PartDto>>(JSON);
+        if (Dtos is null)
+        {
+            throw new JsonException("Could not deserialize any Parts from the response.");
+        }
+        return Dtos.Select(PartMapper.DtoToModel);
     }
 
-
-    public static async Task<List<Part>?> GetScannedByProcess(int id)
+    /// <summary>
+    /// Retrieves all Part objects scanned by a Process, indicated by Id.
+    /// </summary>
+    /// <param name="id">The Id of the Process to collect scannable Parts for.</param>
+    /// <returns></returns>
+    /// <exception cref="JsonException"></exception>
+    public static async Task<IEnumerable<Part>?> GetScannedByProcess(int ProcessId, UserAgent Agent)
     {
-        HttpClient Client = ConfigureHttp();
-        string? Response = await Client.GetStringAsync($"http://localhost:60000/Part/{id}");
-        if (Response is null)
+        // configure a new HttpClient and execute the API call
+        HttpClient Client = HttpClientFactory.Create(Agent);
+        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Part/scannedById={ProcessId}");
+        // ensure that the response was OK and retrieve its contents as JSON
+        try
         {
-            return null;
+            Response.EnsureSuccessStatusCode();
         }
-        PartDto? Dto = JsonConvert.DeserializeObject<PartDto>(Response);
-        if (Dto is null)
+        catch (HttpRequestException)
         {
-            throw new JsonException("Could not deserialize a Part from the response.");
+            throw;
         }
-        return [await PartMapper.DtoToModel(Dto)];
+        string JSON = await Response.Content.ReadAsStringAsync();
+        // deserialize the JSON response and map the data from DTOs to Models
+        IEnumerable<PartDto>? Dtos = JsonConvert.DeserializeObject<IEnumerable<PartDto>>(JSON);
+        if (Dtos is null)
+        {
+            throw new JsonException("Could not deserialize any Parts from the response.");
+        }
+        return Dtos.Select(PartMapper.DtoToModel);
     }
 }
