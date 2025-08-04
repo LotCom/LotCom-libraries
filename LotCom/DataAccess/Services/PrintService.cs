@@ -1,4 +1,3 @@
-using System.Net.Http.Headers;
 using LotCom.Types;
 using LotCom.DataAccess.Mappers;
 using LotCom.DataAccess.Models;
@@ -12,47 +11,32 @@ namespace LotCom.DataAccess.Services;
 public static class PrintService
 {
     /// <summary>
-    /// Configures an HTTP request/response client for this application.
+    /// Retrieves a single Print from the Database using its Id.
     /// </summary>
-    private static HttpClient ConfigureHttp()
+    /// <param name="id"></param>
+    /// <param name="Agent"></param>
+    /// <returns></returns>
+    /// <exception cref="JsonException"></exception>
+    public static async Task<Print>? Get(int id, UserAgent Agent)
     {
-        HttpClient Client = new HttpClient();
-        // cleans the HttpClient's accepted response header configuration
-        Client.DefaultRequestHeaders.Accept.Clear();
-        // adds the default API response header to the accepted response configuration
-        Client.DefaultRequestHeaders.Accept.Add
-        (
-            new MediaTypeWithQualityHeaderValue
-            (
-                "application/json"
-            )
-        );
-        // adds the default UA header for custom apps (ex. LotCom Printer 1.0.0)
-        Client.DefaultRequestHeaders.Add("User-Agent", "LotComPrinter/1.0.0 (Windows; .NET)");
-        return Client;
-    }
-
-    public static async Task<IEnumerable<Print>?> GetAllPrints()
-    {
-        HttpClient Client = ConfigureHttp();
-        string? Response = await Client.GetStringAsync("http://localhost:60000/Prints");
-        if (Response is null)
+        HttpClient Client = HttpClientFactory.Create(Agent);
+        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Print/{id}");
+        // ensure that the response was OK and retrieve its contents as JSON
+        try
         {
-            Console.WriteLine("API had no response.");
-            return null;
+            Response.EnsureSuccessStatusCode();
         }
-        IEnumerable<PrintDto>? Prints = JsonConvert.DeserializeObject<IEnumerable<PrintDto>>(Response);
-        if (Prints is null)
+        catch (HttpRequestException)
         {
-            throw new JsonException("Could not deserialize the Prints from the response");
+            throw;
         }
-        IEnumerable<Task<Print>> MapTasks = Prints.Select(PrintMapper.DtoToModel);
-        Print[] Models = await Task.WhenAll(MapTasks);
-        if (Models is null)
+        string JSON = await Response.Content.ReadAsStringAsync();
+        // deserialize the JSON response and map the data from DTO to Model
+        PrintDto? Dto = JsonConvert.DeserializeObject<PrintDto>(JSON);
+        if (Dto is null)
         {
-            return [];
+            throw new JsonException("Could not deserialize a Print from the response.");
         }
-        Console.WriteLine(Models.Length);
-        return Models;
+        return await PrintMapper.DtoToModel(Dto, Agent);
     }
 }
