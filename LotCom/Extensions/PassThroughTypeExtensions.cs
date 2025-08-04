@@ -32,17 +32,17 @@ public static class PassThroughTypeExtensions
     /// <exception cref="ArgumentException"></exception>
     public static PassThroughType FromString(this string String)
     {
-        if (String.Equals("JBK"))
+        if (String is null || String.Equals(""))
+        {
+            return PassThroughType.None;
+        }
+        else if (String.Equals("JBK"))
         {
             return PassThroughType.JBK;
         }
         else if (String.Equals("Lot"))
         {
             return PassThroughType.Lot;
-        }
-        else if (String.Equals(""))
-        {
-            return PassThroughType.None;
         }
         else
         {

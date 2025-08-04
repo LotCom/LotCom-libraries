@@ -34,17 +34,17 @@ public static class SerializationModeExtensions
     /// <exception cref="ArgumentException"></exception>
     public static SerializationMode FromString(this string String)
     {
-        if (String.Equals("JBK"))
+        if (String is null || String.Equals("") || String.Equals("None"))
+        {
+            return SerializationMode.None;
+        }
+        else if (String.Equals("JBK"))
         {
             return SerializationMode.JBK;
         }
         else if (String.Equals("Lot"))
         {
             return SerializationMode.Lot;
-        }
-        else if (String.Equals("") || String.Equals("None"))
-        {
-            return SerializationMode.None;
         }
         else
         {
