@@ -1,4 +1,3 @@
-using LotCom.Database;
 using LotCom.Enums;
 using LotCom.Extensions;
 using Newtonsoft.Json;
@@ -12,7 +11,7 @@ namespace LotCom.Types;
 /// <param name="Mode">The mode of Serialization this Serial Number uses.</param>
 /// <param name="Part">The Part this Serial Number was assigned to.</param>
 /// <param name="Value">The Value to attempt to apply to this Serial Number.</param>
-public class SerialNumber(SerializationMode Mode, Part Part, int Value)
+public class SerialNumber(SerializationMode Mode, int PartId, int Value)
 {
     /// <summary>
     /// The mode of Serialization that the Serial Number uses.
@@ -20,9 +19,9 @@ public class SerialNumber(SerializationMode Mode, Part Part, int Value)
     public SerializationMode Mode {get;} = Mode;
 
     /// <summary>
-    /// The Part the Serial Number has been assigned to.
+    /// The Id of the Part the Serial Number has been assigned to.
     /// </summary>
-    public Part Part {get;} = Part;
+    public int PartId {get;} = PartId;
 
     /// <summary>
     /// The Serial Number's literal value.
@@ -69,10 +68,7 @@ public class SerialNumber(SerializationMode Mode, Part Part, int Value)
         return
             "{" +
                 $"\"Mode\":\"{Mode}\"," +
-                "\"Part\":{" +
-                    $"\"PartNumber\":\"{Part!.PartNumber}\"," +
-                    $"\"Process\":\"{Part!.ParentProcess}\"" +
-                "}," +
+                $"\"Part\":\"{PartId}\"," +
                 $"\"Value\":\"{Value}\"" +
             "}";
     }
@@ -91,7 +87,7 @@ public class SerialNumber(SerializationMode Mode, Part Part, int Value)
     public static SerialNumber ParseJSON(string Line)
     {
         SerializationMode Mode;
-        Part Part;
+        int PartId;
         int Value;
         // parse Line into JSON
         JObject JSON = JObject.Parse(Line);
@@ -110,28 +106,13 @@ public class SerialNumber(SerializationMode Mode, Part Part, int Value)
         {
             throw new JsonException($"No Part found in cached Serial Number '{Line}'.");
         }
-        string? PartNumber;
-        string? ProcessName;
         try
         {
-            PartNumber = RawPart["PartNumber"]!.ToString();
-            ProcessName = RawPart["Process"]!.ToString();
+            PartId = int.Parse(RawPart["Part"]!.ToString());
         }
         catch
         {
-            throw new JsonException($"Could not parse a Part Number and/or Process from cached Serial Number '{Line}'.");
-        }
-        if (PartNumber is null || ProcessName is null)
-        {
-            throw new JsonException($"Could not parse a Part Number and/or Process from cached Serial Number '{Line}'.");
-        }
-        try
-        {
-            Part = new ProcessData().GetProcessPartData(ProcessName, PartNumber);
-        }
-        catch (SystemException)
-        {
-            throw new ArgumentException($"The Part '{PartNumber}' for Process '{ProcessName}' was not defined.");
+            throw new JsonException($"Could not parse a Part Id from cached Serial Number '{Line}'.");
         }
         // confirm the Value key has a valid value and that it is of type int
         if (RawValue is null) 
@@ -139,71 +120,6 @@ public class SerialNumber(SerializationMode Mode, Part Part, int Value)
             throw new JsonException($"No Value found in cached Serial Number '{Line}'.");
         }
         Value = int.Parse(RawValue.ToString());
-        return new SerialNumber(Mode, Part, Value);
-    }
-
-    /// <summary>
-    /// Attempts to asynchronously parse a SerialNumber object from a JSON formatted string.
-    /// </summary>
-    /// <remarks>
-    /// Throws JsonException if there were any errors parsing any part of the Serial Number from Line.
-    /// Throws ArgumentException if the parsed Part Number was not defined for the parsed Process.
-    /// </remarks>
-    /// <param name="Line"></param>
-    /// <returns>A SerialNumber object.</returns>
-    /// <exception cref="JsonException"></exception>
-    /// <exception cref="ArgumentException"></exception>
-    public static async Task<SerialNumber> ParseJSONAsync(string Line)
-    {
-        SerializationMode Mode;
-        Part Part;
-        int Value;
-        // parse Line into JSON
-        JObject JSON = JObject.Parse(Line);
-        JToken? RawPart = JSON["Part"];
-        JToken? RawValue = JSON["Value"];
-        try
-        {
-            Mode = SerializationModeExtensions.FromString(JSON["Mode"]!.ToString());
-        }
-        catch (ArgumentException)
-        {
-            throw new JsonException($"No SerializationMode found in cached Serial Number '{Line}'.");
-        }
-        // confirm the Part key has a valid value and convert it to a Part
-        if (RawPart is null)
-        {
-            throw new JsonException($"No Part found in cached Serial Number '{Line}'.");
-        }
-        string? PartNumber;
-        string? ProcessName;
-        try
-        {
-            PartNumber = RawPart["PartNumber"]!.ToString();
-            ProcessName = RawPart["Process"]!.ToString();
-        }
-        catch
-        {
-            throw new JsonException($"Could not parse a Part Number and/or Process from cached Serial Number '{Line}'.");
-        }
-        if (PartNumber is null || ProcessName is null)
-        {
-            throw new JsonException($"Could not parse a Part Number and/or Process from cached Serial Number '{Line}'.");
-        }
-        try
-        {
-            Part = await new ProcessData().GetProcessPartDataAsync(ProcessName, PartNumber);
-        }
-        catch (SystemException)
-        {
-            throw new ArgumentException($"The Part '{PartNumber}' for Process '{ProcessName}' was not defined.");
-        }
-        // confirm the Value key has a valid value and that it is of type int
-        if (RawValue is null) 
-        {
-            throw new JsonException($"No Value found in cached Serial Number '{Line}'.");
-        }
-        Value = int.Parse(RawValue.ToString());
-        return new SerialNumber(Mode, Part, Value);
+        return new SerialNumber(Mode, PartId, Value);
     }
 }

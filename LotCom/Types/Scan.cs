@@ -6,8 +6,13 @@ namespace LotCom.Types;
 /// <summary>
 /// Represents a Scan operation in the LotCom database.
 /// </summary>
-public class Scan(Process Process, DateTime Date, IPAddress Address, Part Part, VariableFieldSet VariableFields, DateTime ProductionDate, PartialDataSet PrimaryDataSet, PartialDataSet? SecondaryDataSet = null, PartialDataSet? TertiaryDataSet = null)
+public class Scan(int Id, Process Process, DateTime Date, IPAddress Address, Part Part, VariableFieldSet VariableFields, DateTime ProductionDate, PartialDataSet PrimaryDataSet, PartialDataSet? SecondaryDataSet = null, PartialDataSet? TertiaryDataSet = null)
 {
+    /// <summary>
+    /// The Id of the Scan object in the Database.
+    /// </summary>
+    public int Id = Id;
+
     /// <summary>
     /// The Process that printed the Label that the Scan operation represents.
     /// </summary>
@@ -80,7 +85,7 @@ public class Scan(Process Process, DateTime Date, IPAddress Address, Part Part, 
         return new SerialNumber
         (
             Process.Serialization,
-            Part,
+            Part.Id,
             Literal
         );
     }

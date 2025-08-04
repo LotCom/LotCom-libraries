@@ -1,4 +1,3 @@
-using System.Net;
 using LotCom.Enums;
 
 namespace LotCom.Types;
@@ -6,8 +5,13 @@ namespace LotCom.Types;
 /// <summary>
 /// Represents a Print operation in the LotCom database.
 /// </summary>
-public class Print(Process Process, Part Part, VariableFieldSet VariableFields, DateTime ProductionDate, PartialDataSet PrimaryDataSet, PartialDataSet? SecondaryDataSet = null, PartialDataSet? TertiaryDataSet = null)
+public class Print(int Id, Process Process, Part Part, VariableFieldSet VariableFields, DateTime ProductionDate, PartialDataSet PrimaryDataSet, PartialDataSet? SecondaryDataSet = null, PartialDataSet? TertiaryDataSet = null)
 {
+    /// <summary>
+    /// The Id of the Print object in the Database.
+    /// </summary>
+    public int Id = Id;
+    
     /// <summary>
     /// The Process that printed the Label that the Print operation represents.
     /// </summary>
@@ -70,7 +74,7 @@ public class Print(Process Process, Part Part, VariableFieldSet VariableFields, 
         return new SerialNumber
         (
             Process.Serialization,
-            Part,
+            Part.Id,
             Literal
         );
     }

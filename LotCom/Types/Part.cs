@@ -3,13 +3,13 @@ using CommunityToolkit.Mvvm.ComponentModel;
 namespace LotCom.Types;
 
 /// <summary>
-/// An objective version of a Part loaded from the Process Masterlist data source.
+/// A collection of attributes that define a real-world Part.
 /// </summary>
-/// <param name="ParentProcess">The FullName of the Process that the Part is assigned to.</param>
+/// <param name="ParentProcess">The Process that the Part is produced by.</param>
 /// <param name="PartNumber">The Part Number assigned to the Part.</param>
 /// <param name="PartName">The Part Name assigned to the Part.</param>
 /// <param name="ModelNumber">The Model Number the Part is associated with.</param>
-public partial class Part(string ParentProcess, string PartNumber, string PartName, ModelNumber ModelNumber) : ObservableObject
+public partial class Part(int Id, int ParentProcess, string PartNumber, string PartName, ModelNumber ModelNumber) : ObservableObject
 {
     /// <summary>
     /// Provides a formatted string to display in a ListView; includes the Part Number and Name.
@@ -17,10 +17,15 @@ public partial class Part(string ParentProcess, string PartNumber, string PartNa
     public string GetInfo => $"{PartNumber}\n  {PartName}";
 
     /// <summary>
+    /// The Id of the Part object in the Database.
+    /// </summary>
+    public int Id = Id;
+
+    /// <summary>
     /// [Observable] The Process that the Part is assigned to.
     /// </summary>
     [ObservableProperty]
-    public partial string ParentProcess { get; set; } = ParentProcess;
+    public partial int ParentProcess { get; set; } = ParentProcess;
 
     /// <summary>
     /// [Observable] The Part Number assigned to the Part.
@@ -47,14 +52,5 @@ public partial class Part(string ParentProcess, string PartNumber, string PartNa
     public override string ToString()
     {
         return PartNumber;
-    }
-
-    /// <summary>
-    /// Returns a CSV formatted string representing this Part. Includes the Number and Name of the Part.
-    /// </summary>
-    /// <returns></returns>
-    public string ToCSV()
-    {
-        return $"{PartNumber},{PartName}";
     }
 }
