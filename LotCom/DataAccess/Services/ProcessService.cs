@@ -1,4 +1,3 @@
-using System.Net.Http.Headers;
 using LotCom.DataAccess.Mappers;
 using LotCom.DataAccess.Models;
 using LotCom.Types;
@@ -8,40 +7,34 @@ namespace LotCom.DataAccess.Services;
 
 public static class ProcessService
 {
+    
     /// <summary>
-    /// Configures an HTTP request/response client for this application.
+    /// Retrieves a single Process from the database using its Id.
     /// </summary>
-    private static HttpClient ConfigureHttp()
+    /// <param name="id">The Part object's Id number.</param>
+    /// <returns></returns>
+    /// <exception cref="HttpRequestException"></exception>
+    /// <exception cref="JsonException"></exception>
+    public static async Task<Process?> Get(int id, UserAgent Agent)
     {
-        HttpClient Client = new HttpClient();
-        // cleans the HttpClient's accepted response header configuration
-        Client.DefaultRequestHeaders.Accept.Clear();
-        // adds the default API response header to the accepted response configuration
-        Client.DefaultRequestHeaders.Accept.Add
-        (
-            new MediaTypeWithQualityHeaderValue
-            (
-                "application/json"
-            )
-        );
-        // adds the default UA header for custom apps (ex. LotCom Printer 1.0.0)
-        Client.DefaultRequestHeaders.Add("User-Agent", "LotComPrinter/1.0.0 (Windows; .NET)");
-        return Client;
-    }
-
-    public static async Task<Process?> Get(int id)
-    {
-        HttpClient Client = ConfigureHttp();
-        string? Response = await Client.GetStringAsync($"http://localhost:60000/Process/{id}");
-        if (Response is null)
+        HttpClient Client = HttpClientFactory.Create(Agent);
+        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Process/{id}");
+        // ensure that the response was OK and retrieve its contents as JSON
+        try
         {
-            return null;
+            Response.EnsureSuccessStatusCode();
         }
-        ProcessDto? Dto = JsonConvert.DeserializeObject<ProcessDto>(Response);
+        catch (HttpRequestException)
+        {
+            throw;
+        }
+        string JSON = await Response.Content.ReadAsStringAsync();
+        // deserialize the JSON response and map the data from DTO to Model
+        ProcessDto? Dto = JsonConvert.DeserializeObject<ProcessDto>(JSON);
         if (Dto is null)
         {
             throw new JsonException("Could not deserialize a Process from the response.");
         }
-        return await ProcessMapper.DtoToModel(Dto);
+        return await ProcessMapper.DtoToModel(Dto, Agent);
     }
 }
