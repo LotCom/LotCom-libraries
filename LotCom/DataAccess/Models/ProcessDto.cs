@@ -1,6 +1,6 @@
 namespace LotCom.DataAccess.Models;
 
-public class ProcessDto(int Id, int LineCode, string LineName, string Title, string Serialization, string Type, bool Origination, string? PassThroughType, bool DoesPrint, bool DoesScan, bool UsesJBKNumber, bool UsesLotNumber, bool UsesDieNumber, bool UsesDeburrJBKNumber, bool UsesHeatNumber, int Previous1, int Previous2)
+public class ProcessDto(int Id, int LineCode, string LineName, string Title, string Serialization, string Type, bool Origination, string? PassThroughType, bool DoesPrint, bool DoesScan, bool UsesJBKNumber, bool UsesLotNumber, bool UsesDieNumber, bool UsesDeburrJBKNumber, bool UsesHeatNumber, int? Previous1, int? Previous2)
 {
     public int Id { get; set; } = Id;
     public int LineCode { get; set; } = LineCode;
