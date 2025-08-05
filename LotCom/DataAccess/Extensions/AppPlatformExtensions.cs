@@ -7,6 +7,13 @@ public static class AppPlatformExtensions
 {
     public static string ToString(AppPlatform Value)
     {
-        return "Windows";
+        if (Value == AppPlatform.Cognex)
+        {
+            return "Cognex";
+        }
+        else
+        {
+            return "Windows";
+        }
     }
 }
