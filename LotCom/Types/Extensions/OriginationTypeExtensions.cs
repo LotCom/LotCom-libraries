@@ -1,6 +1,6 @@
-using LotCom.Enums;
+using LotCom.Types.Enums;
 
-namespace LotCom.Extensions;
+namespace LotCom.Types.Extensions;
 
 public static class OriginationTypeExtensions
 {

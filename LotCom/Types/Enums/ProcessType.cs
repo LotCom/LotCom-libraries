@@ -1,4 +1,4 @@
-namespace LotCom.Enums;
+namespace LotCom.Types.Enums;
 
 /// <summary>
 /// Provides basic names for processing types that are carried out by each Process.

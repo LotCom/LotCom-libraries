@@ -1,4 +1,4 @@
-namespace LotCom.Enums;
+namespace LotCom.Types.Enums;
 
 public enum Shift
 {

@@ -1,4 +1,4 @@
-namespace LotCom.Enums;
+namespace LotCom.Types.Enums;
 
 /// <summary>
 /// Provides the possible modes of serialization for Labels in the LotCom system.
