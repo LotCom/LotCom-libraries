@@ -1,6 +1,6 @@
 using LotCom.DataAccess.Models;
 using LotCom.DataAccess.Services;
-using LotCom.Extensions;
+using LotCom.Types.Extensions;
 using LotCom.Types;
 
 namespace LotCom.DataAccess.Mappers;

@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using LotCom.Enums;
-using LotCom.Extensions;
+using LotCom.Types.Enums;
+using LotCom.Types.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

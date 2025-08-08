@@ -1,5 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using LotCom.Enums;
+using LotCom.Types.Enums;
 
 namespace LotCom.Types;
 

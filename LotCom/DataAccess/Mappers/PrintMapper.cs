@@ -2,7 +2,7 @@ using System.Globalization;
 using LotCom.DataAccess.Models;
 using LotCom.DataAccess.Services;
 using LotCom.Types;
-using LotCom.Extensions;
+using LotCom.Types.Extensions;
 using LotCom.Exceptions;
 
 namespace LotCom.DataAccess.Mappers;

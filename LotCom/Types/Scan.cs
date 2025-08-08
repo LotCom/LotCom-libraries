@@ -1,5 +1,5 @@
 using System.Net;
-using LotCom.Enums;
+using LotCom.Types.Enums;
 
 namespace LotCom.Types;
 
