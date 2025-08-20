@@ -1,9 +1,15 @@
 namespace LotCom.DataAccess.Models;
 
-public class PrintDto(int Id, int ProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, string? DieNumber, int? DeburrJBKNumber, string? HeatNumber, string ProductionDate)
+/// <summary>
+/// Defines the publicly-available entity structure of a Scan.
+/// </summary>
+public class ScanDao(int ScanProcessId, string ScanDate, string ScanAddress, int LabelProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, string? DieNumber, int? DeburrJBKNumber, string? HeatNumber, string ProductionDate)
 {
-    public int Id { get; set; } = Id;
-    public int ProcessId { get; set; } = ProcessId;
+    public int Id { get; set; } = 0;
+    public int ScanProcessId { get; set; } = ScanProcessId;
+    public string ScanDate { get; set; } = ScanDate;
+    public string ScanAddress { get; set; } = ScanAddress;
+    public int LabelProcessId { get; set; } = LabelProcessId;
     public int PartId { get; set; } = PartId;
     public int Quantity { get; set; } = Quantity;
     public int? SecondaryQuantity { get; set; } = SecondaryQuantity;
