@@ -120,4 +120,21 @@ public partial class Process(int Id, int LineCode, string Line, string Title, Se
     {
         return FullName;
     }
+
+    /// <summary>
+    /// Checks if this Process has a Previous Process assigned.
+    /// </summary>
+    /// <returns></returns>
+    public bool HasPreviousProcess()
+    {
+        if (PreviousProcesses is null)
+        {
+            return false;
+        }
+        if (PreviousProcesses.Any())
+        {
+            return false;
+        }
+        return true;
+    }
 }
