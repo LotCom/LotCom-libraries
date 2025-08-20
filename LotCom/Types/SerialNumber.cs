@@ -31,6 +31,10 @@ public class SerialNumber(SerializationMode Mode, int PartId, int Value)
     /// <summary>
     /// Returns the SerialNumber's value as a string with leading zeroes to enforce formatting.
     /// </summary>
+    /// <remarks>
+    /// NOTE that this method does not account for Pass-through Serial Numbers. 
+    /// Use the overload GetFormattedValue(ParentProcess) to format these numbers.
+    /// </remarks>
     /// <returns></returns>
     public string GetFormattedValue()
     {
@@ -57,6 +61,63 @@ public class SerialNumber(SerializationMode Mode, int PartId, int Value)
             }
         }
         return FormattedNumber;
+    }
+
+    /// <summary>
+    /// Uses the passed Process' Serialization configuration to format the SerialNumber's value as a string with leading zeroes.
+    /// </summary>
+    /// <param name="ParentProcess"></param>
+    /// <returns></returns>
+    public string GetFormattedValue(Process ParentProcess)
+    {
+        // enforce leading zero-padding format
+        int FormattingMode = -1; // 0 for JBK, 1 for Lot
+        string FormattedNumber = Value.ToString();
+        if
+        (
+            ParentProcess.Serialization == SerializationMode.None
+            && ParentProcess.PassThroughType == PassThroughType.None
+        )
+        {
+            // No serialization format is provided; return raw number
+            return FormattedNumber;
+        }
+        if
+        (
+            ParentProcess.Serialization == SerializationMode.JBK
+            || ParentProcess.PassThroughType == PassThroughType.JBK
+        )
+        {
+            // format number using JBK format
+            FormattingMode = 0;
+        }
+        else if
+        (
+            ParentProcess.Serialization == SerializationMode.Lot
+            || ParentProcess.PassThroughType == PassThroughType.Lot
+        )
+        {
+            FormattingMode = 1;
+        }
+        // always pad to at least three digits
+        while (FormattedNumber.Length < 3)
+        {
+            FormattedNumber = $"0{FormattedNumber}";
+        }
+        if (FormattingMode != 1)
+        {
+            // JBK mode; number is formatted
+            return FormattedNumber;
+        }
+        else
+        {
+            // Lot mode; pad further to nine digits
+            while (FormattedNumber.Length < 9)
+            {
+                FormattedNumber = $"0{FormattedNumber}";
+            }
+            return FormattedNumber;
+        }
     }
 
     /// <summary>
@@ -108,7 +169,7 @@ public class SerialNumber(SerializationMode Mode, int PartId, int Value)
         }
         try
         {
-            PartId = int.Parse(RawPart["Part"]!.ToString());
+            PartId = int.Parse(RawPart.ToString());
         }
         catch
         {
