@@ -3,7 +3,7 @@ namespace LotCom.DataAccess.Models;
 /// <summary>
 /// Defines the publicly-available entity structure of a Part.
 /// </summary>
-public class PartDao(string Number, int PrintedBy, int ScannedBy, string Name, string ModelCode)
+public class PartDto(string Number, int PrintedBy, int ScannedBy, string Name, string ModelCode)
 {
     public int Id { get; set; } = 0;
 
