@@ -12,12 +12,13 @@ public static class SerialFeedService
     /// <param name="PartId"></param>
     /// <param name="Agent"></param>
     /// <returns></returns>
+    /// <exception cref="HttpRequestException"></exception>
     /// <exception cref="JsonException"></exception>
     public static async Task<SerialNumber> ConsumeJBKNumber(int PartId, UserAgent Agent)
     {
         // configure a new HttpClient and execute the API call
         HttpClient Client = HttpClientFactory.Create(Agent);
-        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Serial/consumeJBKFor={PartId}");
+        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Serial/consumeJBKFor?partId={PartId}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
         {
@@ -43,12 +44,13 @@ public static class SerialFeedService
     /// <param name="PartId"></param>
     /// <param name="Agent"></param>
     /// <returns></returns>
+    /// <exception cref="HttpRequestException"></exception>
     /// <exception cref="JsonException"></exception>
     public static async Task<SerialNumber> ConsumeLotNumber(int PartId, UserAgent Agent)
     {
         // configure a new HttpClient and execute the API call
         HttpClient Client = HttpClientFactory.Create(Agent);
-        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Serialize/consumeLotFor={PartId}");
+        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Serialize/consumeLotFor?partId={PartId}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
         {
