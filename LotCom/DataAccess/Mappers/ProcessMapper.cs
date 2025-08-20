@@ -11,41 +11,41 @@ namespace LotCom.DataAccess.Mappers;
 public static class ProcessMapper
 {
     /// <summary>
-    /// Maps the values of a Process DTO to a Model object.
+    /// Maps the values of a Process Dao to a Model object.
     /// </summary>
-    /// <param name="Dto"></param>
+    /// <param name="Dao"></param>
     /// <returns></returns>
-    public static async Task<Process> DtoToModel(ProcessDto Dto, UserAgent Agent)
+    public static async Task<Process> DaoToModel(ProcessDao Dao, UserAgent Agent)
     {
         // map native/simple typed properties
         Process Model = new Process
         (
-            Dto.Id,
-            Dto.LineCode,
-            Dto.LineName,
-            Dto.Title,
-            SerializationModeExtensions.FromString(Dto.Serialization),
-            ProcessTypeExtensions.FromString(Dto.Type),
-            OriginationTypeExtensions.FromBoolean(Dto.Origination),
-            Dto.DoesPrint,
-            Dto.DoesScan,
+            Dao.Id,
+            Dao.LineCode,
+            Dao.LineName,
+            Dao.Title,
+            SerializationModeExtensions.FromString(Dao.Serialization!),
+            ProcessTypeExtensions.FromString(Dao.Type),
+            OriginationTypeExtensions.FromBoolean(Dao.Origination),
+            Dao.DoesPrint,
+            Dao.DoesScan,
             null,
             null,
             new RequiredFields
             (
-                Dto.UsesJBKNumber,
-                Dto.UsesLotNumber,
-                Dto.UsesDieNumber,
-                Dto.UsesDeburrJBKNumber,
-                Dto.UsesHeatNumber
+                Dao.UsesJBKNumber,
+                Dao.UsesLotNumber,
+                Dao.UsesDieNumber,
+                Dao.UsesDeburrJBKNumber,
+                Dao.UsesHeatNumber
             ),
-            PassThroughTypeExtensions.FromString(Dto.PassThroughType!),
+            PassThroughTypeExtensions.FromString(Dao.PassThroughType!),
             null
         );
         // retrieve printable part ids for the Process
         if (Model.Prints)
         {
-            IEnumerable<Part>? PartsFromDatabase = await PartService.GetPrintedByProcess(Dto.Id, Agent);
+            IEnumerable<Part>? PartsFromDatabase = await PartService.GetPrintedByProcess(Dao.Id, Agent);
             if (PartsFromDatabase is null)
             {
                 Model.PrintParts = [];
@@ -58,7 +58,7 @@ public static class ProcessMapper
         // retrieve scannable part ids for the Process
         if (Model.Scans)
         {
-            IEnumerable<Part>? PartsFromDatabase = await PartService.GetScannedByProcess(Dto.Id, Agent);
+            IEnumerable<Part>? PartsFromDatabase = await PartService.GetScannedByProcess(Dao.Id, Agent);
             if (PartsFromDatabase is null)
             {
                 Model.ScanParts = [];
@@ -69,18 +69,18 @@ public static class ProcessMapper
             }
         }
         // retrieve any previous Processes for the Process
-        if (Dto.Previous1 is not null)
+        if (Dao.Previous1 is not null)
         {
-            Model.PreviousProcesses = [(int)Dto.Previous1];
-            if (Dto.Previous2 is not null)
+            Model.PreviousProcesses = [(int)Dao.Previous1];
+            if (Dao.Previous2 is not null)
             {
-                Model.PreviousProcesses = Model.PreviousProcesses.Append((int)Dto.Previous2);
+                Model.PreviousProcesses = Model.PreviousProcesses.Append((int)Dao.Previous2);
             }
         }
         return Model;
     }
 
-    public static ProcessDto ModelToDto(Process Model)
+    public static ProcessDao ModelToDao(Process Model)
     {
         throw new NotImplementedException();
     }
