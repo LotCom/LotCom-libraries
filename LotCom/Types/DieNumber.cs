@@ -12,7 +12,7 @@ public partial class DieNumber : ObservableObject
     /// <summary>
     /// The absolute lowest digit literal that can be assigned to a Die Number.
     /// </summary>
-    private const int MinValue = 1;
+    private const int MinValue = 0;
 
     /// <summary>
     /// The absolute highest digit literal that can be assigned to a Die Number.
