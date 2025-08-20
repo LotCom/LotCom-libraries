@@ -1,6 +1,6 @@
 using LotCom.DataAccess.Enums;
 
-namespace LotCom.DataAccess;
+namespace LotCom.DataAccess.Auth;
 
 public static class UserAgentFactory
 {

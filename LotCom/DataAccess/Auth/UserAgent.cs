@@ -1,6 +1,6 @@
 using LotCom.DataAccess.Enums;
 
-namespace LotCom.DataAccess;
+namespace LotCom.DataAccess.Auth;
 
 /// <summary>
 /// A LotCom User-Agent configuration to apply headers to API calls.
