@@ -32,15 +32,15 @@ public static class ScanService
             throw;
         }
         string JSON = await Response.Content.ReadAsStringAsync();
-        // deserialize the JSON response and map the data from Dao to Model
-        IEnumerable<ScanDao>? Daos = JsonConvert.DeserializeObject<IEnumerable<ScanDao>>(JSON);
-        if (Daos is null)
+        // deserialize the JSON response and map the data from Dto to Model
+        IEnumerable<ScanDto>? Dtos = JsonConvert.DeserializeObject<IEnumerable<ScanDto>>(JSON);
+        if (Dtos is null)
         {
             throw new JsonException("Could not deserialize Scans from the response.");
         }
         IEnumerable<Scan> Scans = await Task.WhenAll
         (
-            Daos.Select(async x => await ScanMapper.DaoToModel(x, Agent))
+            Dtos.Select(async x => await ScanMapper.DtoToModel(x, Agent))
         );
         return Scans;
     }
@@ -65,15 +65,15 @@ public static class ScanService
             throw;
         }
         string JSON = await Response.Content.ReadAsStringAsync();
-        // deserialize the JSON response and map the data from Dao to Model
-        IEnumerable<ScanDao>? Daos = JsonConvert.DeserializeObject<IEnumerable<ScanDao>>(JSON);
-        if (Daos is null)
+        // deserialize the JSON response and map the data from Dto to Model
+        IEnumerable<ScanDto>? Dtos = JsonConvert.DeserializeObject<IEnumerable<ScanDto>>(JSON);
+        if (Dtos is null)
         {
             throw new JsonException("Could not deserialize Scans from the response.");
         }
         IEnumerable<Scan> Scans = await Task.WhenAll
         (
-            Daos.Select(async x => await ScanMapper.DaoToModel(x, Agent))
+            Dtos.Select(async x => await ScanMapper.DtoToModel(x, Agent))
         );
         return Scans;
     }
@@ -99,13 +99,13 @@ public static class ScanService
             throw;
         }
         string JSON = await Response.Content.ReadAsStringAsync();
-        // deserialize the JSON response and map the data from Dao to Model
-        ScanDao? Dao = JsonConvert.DeserializeObject<ScanDao>(JSON);
-        if (Dao is null)
+        // deserialize the JSON response and map the data from Dto to Model
+        ScanDto? Dto = JsonConvert.DeserializeObject<ScanDto>(JSON);
+        if (Dto is null)
         {
             throw new JsonException("Could not deserialize a Scan from the response.");
         }
-        return await ScanMapper.DaoToModel(Dao, Agent);
+        return await ScanMapper.DtoToModel(Dto, Agent);
     }
 
     /// <summary>
@@ -133,15 +133,15 @@ public static class ScanService
             throw;
         }
         string JSON = await Response.Content.ReadAsStringAsync();
-        // deserialize the JSON response and map the data from Dao to Model
-        IEnumerable<ScanDao>? Daos = JsonConvert.DeserializeObject<IEnumerable<ScanDao>>(JSON);
-        if (Daos is null)
+        // deserialize the JSON response and map the data from Dto to Model
+        IEnumerable<ScanDto>? Dtos = JsonConvert.DeserializeObject<IEnumerable<ScanDto>>(JSON);
+        if (Dtos is null)
         {
             throw new JsonException("Could not deserialize Scans from the response.");
         }
         IEnumerable<Scan> Scans = await Task.WhenAll
         (
-            Daos.Select(async x => await ScanMapper.DaoToModel(x, Agent))
+            Dtos.Select(async x => await ScanMapper.DtoToModel(x, Agent))
         );
         return Scans;
     }
@@ -176,15 +176,15 @@ public static class ScanService
             throw;
         }
         string JSON = await Response.Content.ReadAsStringAsync();
-        // deserialize the JSON response and map the data from Dao to Model
-        IEnumerable<ScanDao>? Daos = JsonConvert.DeserializeObject<IEnumerable<ScanDao>>(JSON);
-        if (Daos is null)
+        // deserialize the JSON response and map the data from Dto to Model
+        IEnumerable<ScanDto>? Dtos = JsonConvert.DeserializeObject<IEnumerable<ScanDto>>(JSON);
+        if (Dtos is null)
         {
             throw new JsonException("Could not deserialize Scans from the response.");
         }
         IEnumerable<Scan> Scans = await Task.WhenAll
         (
-            Daos.Select(async x => await ScanMapper.DaoToModel(x, Agent))
+            Dtos.Select(async x => await ScanMapper.DtoToModel(x, Agent))
         );
         return Scans;
     }
@@ -199,10 +199,10 @@ public static class ScanService
     public static async Task<bool> Create(Scan Model, UserAgent Agent)
     {
         HttpClient Client = HttpClientFactory.Create(Agent);
-        // convert the Model into Dao
-        ScanDao Dao = ScanMapper.ModelToDao(Model);
-        // convert the Dao into a JSON stream
-        JsonContent Content = JsonContent.Create(Dao, new MediaTypeHeaderValue("application/json"));
+        // convert the Model into Dto
+        ScanDto Dto = ScanMapper.ModelToDto(Model);
+        // convert the Dto into a JSON stream
+        JsonContent Content = JsonContent.Create(Dto, new MediaTypeHeaderValue("application/json"));
         // send the PUT request
         HttpResponseMessage Response = await Client.PostAsync
         (
@@ -240,10 +240,10 @@ public static class ScanService
     public static async Task<bool> Update(int TargetId, Scan NewModel, UserAgent Agent)
     {
         HttpClient Client = HttpClientFactory.Create(Agent);
-        // convert the Model into Dao
-        ScanDao Dao = ScanMapper.ModelToDao(NewModel);
-        // convert the Dao into a JSON stream
-        JsonContent Content = JsonContent.Create(Dao, new MediaTypeHeaderValue("application/json"));
+        // convert the Model into Dto
+        ScanDto Dto = ScanMapper.ModelToDto(NewModel);
+        // convert the Dto into a JSON stream
+        JsonContent Content = JsonContent.Create(Dto, new MediaTypeHeaderValue("application/json"));
         // send the PUT request
         HttpResponseMessage Response = await Client.PutAsync
         (

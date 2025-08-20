@@ -13,15 +13,15 @@ namespace LotCom.DataAccess.Mappers;
 public static class PrintMapper
 {
     /// <summary>
-    /// Maps the values of a Print Dao to a Model object.
+    /// Maps the values of a Print Dto to a Model object.
     /// </summary>
-    /// <param name="Dao"></param>
+    /// <param name="Dto"></param>
     /// <returns></returns>
-    public static async Task<Print> DaoToModel(PrintDao Dao, UserAgent Agent)
+    public static async Task<Print> DtoToModel(PrintDto Dto, UserAgent Agent)
     {
         // retrieve the Process and Part from the Database
-        Process? ModelProcess = await ProcessService.Get(Dao.ProcessId, Agent);
-        Part? ModelPart = await PartService.Get(Dao.PartId, Agent);
+        Process? ModelProcess = await ProcessService.Get(Dto.ProcessId, Agent);
+        Part? ModelPart = await PartService.Get(Dto.PartId, Agent);
         if (ModelProcess is null)
         {
             throw new DatabaseException("Could not retrieve the Process referenced by the Print.");
@@ -32,68 +32,68 @@ public static class PrintMapper
         }
         // map any non-null variable fields
         VariableFieldSet ModelVariableFields = new VariableFieldSet();
-        if (Dao.JBKNumber is not null)
+        if (Dto.JBKNumber is not null)
         {
-            ModelVariableFields.JBKNumber = new JBKNumber((int)Dao.JBKNumber);
+            ModelVariableFields.JBKNumber = new JBKNumber((int)Dto.JBKNumber);
         }
-        if (Dao.LotNumber is not null)
+        if (Dto.LotNumber is not null)
         {
             ModelVariableFields.LotNumber = new LotNumber
             (
-                int.Parse(Dao.LotNumber.Replace(" ", ""))
+                int.Parse(Dto.LotNumber.Replace(" ", ""))
             );
         }
-        if (Dao.DieNumber is not null)
+        if (Dto.DieNumber is not null)
         {
-            ModelVariableFields.DieNumber = new DieNumber(Dao.DieNumber);
+            ModelVariableFields.DieNumber = new DieNumber(Dto.DieNumber);
         }
-        if (Dao.DeburrJBKNumber is not null)
+        if (Dto.DeburrJBKNumber is not null)
         {
-            ModelVariableFields.DeburrJBKNumber = new JBKNumber((int)Dao.DeburrJBKNumber);
+            ModelVariableFields.DeburrJBKNumber = new JBKNumber((int)Dto.DeburrJBKNumber);
         }
-        if (Dao.HeatNumber is not null)
+        if (Dto.HeatNumber is not null)
         {
             ModelVariableFields.HeatNumber = new HeatNumber
             (
-                int.Parse(Dao.HeatNumber.Replace(" ", ""))
+                int.Parse(Dto.HeatNumber.Replace(" ", ""))
             );
         }
         // map partial data sets
         PartialDataSet PrimaryData = new PartialDataSet
         (
-            new Quantity(Dao.Quantity),
-            ShiftExtensions.FromString(Dao.Shift.ToString()),
-            new Operator(Dao.Operator)
+            new Quantity(Dto.Quantity),
+            ShiftExtensions.FromString(Dto.Shift.ToString()),
+            new Operator(Dto.Operator)
         );
         PartialDataSet? SecondaryData = null;
         PartialDataSet? TertiaryData = null;
-        if (Dao.SecondaryQuantity is not null)
+        if (Dto.SecondaryQuantity is not null)
         {
             SecondaryData = new PartialDataSet
             (
-                new Quantity((int)Dao.SecondaryQuantity),
-                ShiftExtensions.FromString(Dao.SecondaryShift.ToString()!),
-                new Operator(Dao.SecondaryOperator!)
+                new Quantity((int)Dto.SecondaryQuantity),
+                ShiftExtensions.FromString(Dto.SecondaryShift.ToString()!),
+                new Operator(Dto.SecondaryOperator!)
             );
         }
-        if (Dao.TertiaryQuantity is not null)
+        if (Dto.TertiaryQuantity is not null)
         {
             TertiaryData = new PartialDataSet
             (
-                new Quantity((int)Dao.TertiaryQuantity),
-                ShiftExtensions.FromString(Dao.TertiaryShift.ToString()!),
-                new Operator(Dao.TertiaryOperator!)
+                new Quantity((int)Dto.TertiaryQuantity),
+                ShiftExtensions.FromString(Dto.TertiaryShift.ToString()!),
+                new Operator(Dto.TertiaryOperator!)
             );
         }
         // convert ProductionDate to DateTime
-        string ProductionDate = Dao.ProductionDate
+        string ProductionDate = Dto.ProductionDate
             .Replace("%2F", "/")
             .Replace("%3A", ":");
         DateTime ModelProductionDate = DateTime.ParseExact(ProductionDate, "MM/dd/yyyy-HH:mm:ss", CultureInfo.InvariantCulture);
         // construct and return new Print Model
         return new Print
         (
-            Dao.Id,
+            Dto.Id,
             ModelProcess,
             ModelPart,
             ModelVariableFields,
@@ -105,14 +105,14 @@ public static class PrintMapper
     }
 
     /// <summary>
-    /// Maps the values of a Model to a Dao object.
+    /// Maps the values of a Model to a Dto object.
     /// </summary>
     /// <param name="Model"></param>
     /// <returns></returns>
-    public static PrintDao ModelToDao(Print Model)
+    public static PrintDto ModelToDto(Print Model)
     {
         // map base data
-        PrintDao Dao = new PrintDao
+        PrintDto Dto = new PrintDto
         (
             Model.Process.Id,
             Model.Part.Id,
@@ -137,39 +137,39 @@ public static class PrintMapper
         // map secondary and tertiary data sets
         if (Model.SecondaryDataSet is not null)
         {
-            Dao.SecondaryQuantity = Model.SecondaryDataSet.Quantity.Value;
-            Dao.SecondaryShift = int.Parse(ShiftExtensions.ToString(Model.SecondaryDataSet.Shift));
-            Dao.SecondaryOperator = Model.SecondaryDataSet.Operator.Initials;
+            Dto.SecondaryQuantity = Model.SecondaryDataSet.Quantity.Value;
+            Dto.SecondaryShift = int.Parse(ShiftExtensions.ToString(Model.SecondaryDataSet.Shift));
+            Dto.SecondaryOperator = Model.SecondaryDataSet.Operator.Initials;
         }
         if (Model.TertiaryDataSet is not null)
         {
-            Dao.TertiaryQuantity = Model.TertiaryDataSet.Quantity.Value;
-            Dao.TertiaryShift = int.Parse(ShiftExtensions.ToString(Model.TertiaryDataSet.Shift));
-            Dao.TertiaryOperator = Model.TertiaryDataSet.Operator.Initials;
+            Dto.TertiaryQuantity = Model.TertiaryDataSet.Quantity.Value;
+            Dto.TertiaryShift = int.Parse(ShiftExtensions.ToString(Model.TertiaryDataSet.Shift));
+            Dto.TertiaryOperator = Model.TertiaryDataSet.Operator.Initials;
         }
         // map variable fields
         if (Model.VariableFields.JBKNumber is not null)
         {
-            Dao.JBKNumber = Model.VariableFields.JBKNumber.Literal;
+            Dto.JBKNumber = Model.VariableFields.JBKNumber.Literal;
         }
         if (Model.VariableFields.LotNumber is not null)
         {
-            Dao.JBKNumber = Model.VariableFields.LotNumber.Literal;
+            Dto.JBKNumber = Model.VariableFields.LotNumber.Literal;
         }
         if (Model.VariableFields.DieNumber is not null)
         {
-            Dao.DieNumber = Model.VariableFields.DieNumber.Formatted;
+            Dto.DieNumber = Model.VariableFields.DieNumber.Formatted;
         }
         if (Model.VariableFields.DeburrJBKNumber is not null)
         {
-            Dao.DeburrJBKNumber = Model.VariableFields.DeburrJBKNumber.Literal;
+            Dto.DeburrJBKNumber = Model.VariableFields.DeburrJBKNumber.Literal;
         }
         if (Model.VariableFields.HeatNumber is not null)
         {
-            Dao.HeatNumber = Model.VariableFields.HeatNumber.ToString();
+            Dto.HeatNumber = Model.VariableFields.HeatNumber.ToString();
         }
         // set the ID and return
-        Dao.Id = Model.Id;
-        return Dao;
+        Dto.Id = Model.Id;
+        return Dto;
     }
 }

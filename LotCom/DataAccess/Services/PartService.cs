@@ -29,13 +29,13 @@ public static class PartService
             throw;
         }
         string JSON = await Response.Content.ReadAsStringAsync();
-        // deserialize the JSON response and map the data from Dao to Model
-        PartDao? Dao = JsonConvert.DeserializeObject<PartDao>(JSON);
-        if (Dao is null)
+        // deserialize the JSON response and map the data from Dto to Model
+        PartDto? Dto = JsonConvert.DeserializeObject<PartDto>(JSON);
+        if (Dto is null)
         {
             throw new JsonException("Could not deserialize a Part from the response.");
         }
-        return PartMapper.DaoToModel(Dao);
+        return PartMapper.DtoToModel(Dto);
     }
 
     /// <summary>
@@ -60,13 +60,13 @@ public static class PartService
             throw;
         }
         string JSON = await Response.Content.ReadAsStringAsync();
-        // deserialize the JSON response and map the data from Daos to Models
-        IEnumerable<PartDao>? Daos = JsonConvert.DeserializeObject<IEnumerable<PartDao>>(JSON);
-        if (Daos is null)
+        // deserialize the JSON response and map the data from Dtos to Models
+        IEnumerable<PartDto>? Dtos = JsonConvert.DeserializeObject<IEnumerable<PartDto>>(JSON);
+        if (Dtos is null)
         {
             throw new JsonException("Could not deserialize any Parts from the response.");
         }
-        return Daos.Select(PartMapper.DaoToModel);
+        return Dtos.Select(PartMapper.DtoToModel);
     }
 
     /// <summary>
@@ -91,12 +91,12 @@ public static class PartService
             throw;
         }
         string JSON = await Response.Content.ReadAsStringAsync();
-        // deserialize the JSON response and map the data from Daos to Models
-        IEnumerable<PartDao>? Daos = JsonConvert.DeserializeObject<IEnumerable<PartDao>>(JSON);
-        if (Daos is null)
+        // deserialize the JSON response and map the data from Dtos to Models
+        IEnumerable<PartDto>? Dtos = JsonConvert.DeserializeObject<IEnumerable<PartDto>>(JSON);
+        if (Dtos is null)
         {
             throw new JsonException("Could not deserialize any Parts from the response.");
         }
-        return Daos.Select(PartMapper.DaoToModel);
+        return Dtos.Select(PartMapper.DtoToModel);
     }
 }

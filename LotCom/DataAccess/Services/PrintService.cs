@@ -33,13 +33,13 @@ public static class PrintService
             throw;
         }
         string JSON = await Response.Content.ReadAsStringAsync();
-        // deserialize the JSON response and map the data from Dao to Model
-        PrintDao? Dao = JsonConvert.DeserializeObject<PrintDao>(JSON);
-        if (Dao is null)
+        // deserialize the JSON response and map the data from Dto to Model
+        PrintDto? Dto = JsonConvert.DeserializeObject<PrintDto>(JSON);
+        if (Dto is null)
         {
             throw new JsonException("Could not deserialize a Print from the response.");
         }
-        return await PrintMapper.DaoToModel(Dao, Agent);
+        return await PrintMapper.DtoToModel(Dto, Agent);
     }
 
     /// <summary>
@@ -72,15 +72,15 @@ public static class PrintService
             throw;
         }
         string JSON = await Response.Content.ReadAsStringAsync();
-        // deserialize the JSON response and map the data from Dao to Model
-        IEnumerable<PrintDao>? Daos = JsonConvert.DeserializeObject<IEnumerable<PrintDao>>(JSON);
-        if (Daos is null)
+        // deserialize the JSON response and map the data from Dto to Model
+        IEnumerable<PrintDto>? Dtos = JsonConvert.DeserializeObject<IEnumerable<PrintDto>>(JSON);
+        if (Dtos is null)
         {
             throw new JsonException("Could not deserialize Prints from the response.");
         }
         IEnumerable<Print> Prints = await Task.WhenAll
         (
-            Daos.Select(async x => await PrintMapper.DaoToModel(x, Agent))
+            Dtos.Select(async x => await PrintMapper.DtoToModel(x, Agent))
         );
         return Prints;
     }
@@ -95,10 +95,10 @@ public static class PrintService
     public static async Task<bool> Create(Print Model, UserAgent Agent)
     {
         HttpClient Client = HttpClientFactory.Create(Agent);
-        // convert the Model into Dao
-        PrintDao Dao = PrintMapper.ModelToDao(Model);
-        // convert the Dao into a JSON stream
-        JsonContent Content = JsonContent.Create(Dao, new MediaTypeHeaderValue("application/json"));
+        // convert the Model into Dto
+        PrintDto Dto = PrintMapper.ModelToDto(Model);
+        // convert the Dto into a JSON stream
+        JsonContent Content = JsonContent.Create(Dto, new MediaTypeHeaderValue("application/json"));
         // send the PUT request
         HttpResponseMessage Response = await Client.PostAsync
         (
@@ -136,10 +136,10 @@ public static class PrintService
     public static async Task<bool> Update(int TargetId, Print NewModel, UserAgent Agent)
     {
         HttpClient Client = HttpClientFactory.Create(Agent);
-        // convert the Model into Dao
-        PrintDao Dao = PrintMapper.ModelToDao(NewModel);
-        // convert the Dao into a JSON stream
-        JsonContent Content = JsonContent.Create(Dao, new MediaTypeHeaderValue("application/json"));
+        // convert the Model into Dto
+        PrintDto Dto = PrintMapper.ModelToDto(NewModel);
+        // convert the Dto into a JSON stream
+        JsonContent Content = JsonContent.Create(Dto, new MediaTypeHeaderValue("application/json"));
         // send the PUT request
         HttpResponseMessage Response = await Client.PutAsync
         (

@@ -15,11 +15,11 @@ namespace LotCom.DataAccess.Mappers;
 public static class ScanMapper
 {
     /// <summary>
-    /// Maps the values of a Scan Dao to a Model object.
+    /// Maps the values of a Scan Dto to a Model object.
     /// </summary>
-    /// <param name="Dao"></param>
+    /// <param name="Dto"></param>
     /// <returns></returns>
-    public static async Task<Scan> DaoToModel(ScanDao Dao, UserAgent Agent)
+    public static async Task<Scan> DtoToModel(ScanDto Dto, UserAgent Agent)
     {
         Process? ModelScanProcess;
         Process? ModelLabelProcess;
@@ -27,12 +27,12 @@ public static class ScanMapper
         // retrieve the ScanProcess from the Database
         try
         {
-            ModelScanProcess = await ProcessService.Get(Dao.ScanProcessId, Agent);
+            ModelScanProcess = await ProcessService.Get(Dto.ScanProcessId, Agent);
         }
         // some database-generated issue
         catch (HttpRequestException _ex)
         {
-            throw new DatabaseException($"Could not retreive Process {Dao.ScanProcessId} from the Database.", _ex);
+            throw new DatabaseException($"Could not retreive Process {Dto.ScanProcessId} from the Database.", _ex);
         }
         // some formatting issue
         catch (JsonException _ex)
@@ -42,12 +42,12 @@ public static class ScanMapper
         // retrieve the LabelProcess from the Database
         try
         {
-            ModelLabelProcess = await ProcessService.Get(Dao.LabelProcessId, Agent);
+            ModelLabelProcess = await ProcessService.Get(Dto.LabelProcessId, Agent);
         }
         // some database-generated issue
         catch (HttpRequestException _ex)
         {
-            throw new DatabaseException($"Could not retreive Process {Dao.LabelProcessId} from the Database.", _ex);
+            throw new DatabaseException($"Could not retreive Process {Dto.LabelProcessId} from the Database.", _ex);
         }
         // some formatting issue
         catch (JsonException _ex)
@@ -57,12 +57,12 @@ public static class ScanMapper
         // retrieve the LabelPart from the Database
         try
         {
-            ModelPart = await PartService.Get(Dao.PartId, Agent);
+            ModelPart = await PartService.Get(Dto.PartId, Agent);
         }
         // some database-generated issue
         catch (HttpRequestException _ex)
         {
-            throw new DatabaseException($"Could not retreive Part {Dao.PartId} from the Database.", _ex);
+            throw new DatabaseException($"Could not retreive Part {Dto.PartId} from the Database.", _ex);
         }
         // some formatting issue
         catch (JsonException _ex)
@@ -83,74 +83,74 @@ public static class ScanMapper
         }
         // map any non-null variable fields
         VariableFieldSet ModelVariableFields = new VariableFieldSet();
-        if (Dao.JBKNumber is not null)
+        if (Dto.JBKNumber is not null)
         {
-            ModelVariableFields.JBKNumber = new JBKNumber((int)Dao.JBKNumber);
+            ModelVariableFields.JBKNumber = new JBKNumber((int)Dto.JBKNumber);
         }
-        if (Dao.LotNumber is not null)
+        if (Dto.LotNumber is not null)
         {
             ModelVariableFields.LotNumber = new LotNumber
             (
-                int.Parse(Dao.LotNumber.Replace(" ", ""))
+                int.Parse(Dto.LotNumber.Replace(" ", ""))
             );
         }
-        if (Dao.DieNumber is not null)
+        if (Dto.DieNumber is not null)
         {
-            ModelVariableFields.DieNumber = new DieNumber(Dao.DieNumber);
+            ModelVariableFields.DieNumber = new DieNumber(Dto.DieNumber);
         }
-        if (Dao.DeburrJBKNumber is not null)
+        if (Dto.DeburrJBKNumber is not null)
         {
-            ModelVariableFields.DeburrJBKNumber = new JBKNumber((int)Dao.DeburrJBKNumber);
+            ModelVariableFields.DeburrJBKNumber = new JBKNumber((int)Dto.DeburrJBKNumber);
         }
-        if (Dao.HeatNumber is not null)
+        if (Dto.HeatNumber is not null)
         {
             ModelVariableFields.HeatNumber = new HeatNumber
             (
-                int.Parse(Dao.HeatNumber.Replace(" ", ""))
+                int.Parse(Dto.HeatNumber.Replace(" ", ""))
             );
         }
         // map partial data sets
         PartialDataSet PrimaryData = new PartialDataSet
         (
-            new Quantity(Dao.Quantity),
-            ShiftExtensions.FromString(Dao.Shift.ToString()),
-            new Operator(Dao.Operator)
+            new Quantity(Dto.Quantity),
+            ShiftExtensions.FromString(Dto.Shift.ToString()),
+            new Operator(Dto.Operator)
         );
         PartialDataSet? SecondaryData = null;
         PartialDataSet? TertiaryData = null;
-        if (Dao.SecondaryQuantity is not null)
+        if (Dto.SecondaryQuantity is not null)
         {
             SecondaryData = new PartialDataSet
             (
-                new Quantity((int)Dao.SecondaryQuantity),
-                ShiftExtensions.FromString(Dao.SecondaryShift.ToString()!),
-                new Operator(Dao.SecondaryOperator!)
+                new Quantity((int)Dto.SecondaryQuantity),
+                ShiftExtensions.FromString(Dto.SecondaryShift.ToString()!),
+                new Operator(Dto.SecondaryOperator!)
             );
         }
-        if (Dao.TertiaryQuantity is not null)
+        if (Dto.TertiaryQuantity is not null)
         {
             TertiaryData = new PartialDataSet
             (
-                new Quantity((int)Dao.TertiaryQuantity),
-                ShiftExtensions.FromString(Dao.TertiaryShift.ToString()!),
-                new Operator(Dao.TertiaryOperator!)
+                new Quantity((int)Dto.TertiaryQuantity),
+                ShiftExtensions.FromString(Dto.TertiaryShift.ToString()!),
+                new Operator(Dto.TertiaryOperator!)
             );
         }
         // convert ProductionDate to DateTime
-        string ProductionDate = Dao.ProductionDate
+        string ProductionDate = Dto.ProductionDate
             .Replace("%2F", "/")
             .Replace("%3A", ":");
         DateTime ModelProductionDate = DateTime.ParseExact(ProductionDate, "MM/dd/yyyy-HH:mm:ss", CultureInfo.InvariantCulture);
         // convert scan date and address to objects
-        string ScanDate = Dao.ScanDate
+        string ScanDate = Dto.ScanDate
             .Replace("%2F", "/")
             .Replace("%3A", ":");
         DateTime ModelScanDate = DateTime.ParseExact(ScanDate, "MM/dd/yyyy-HH:mm:ss", CultureInfo.InvariantCulture);
-        IPAddress ModelScanAddress = IPAddress.Parse(Dao.ScanAddress);
+        IPAddress ModelScanAddress = IPAddress.Parse(Dto.ScanAddress);
         // construct and return new Scan Model
         return new Scan
         (
-            Dao.Id,
+            Dto.Id,
             ModelScanProcess,
             ModelScanDate,
             ModelScanAddress,
@@ -165,14 +165,14 @@ public static class ScanMapper
     }
 
     /// <summary>
-    /// Maps the values of a Model to a Dao object.
+    /// Maps the values of a Model to a Dto object.
     /// </summary>
     /// <param name="Model"></param>
     /// <returns></returns>
-    public static ScanDao ModelToDao(Scan Model)
+    public static ScanDto ModelToDto(Scan Model)
     {
         // map base data
-        ScanDao Dao = new ScanDao
+        ScanDto Dto = new ScanDto
         (
             Model.ScanProcess.Id,
             new Timestamp(Model.ScanDate).Stamp
@@ -202,39 +202,39 @@ public static class ScanMapper
         // map secondary and tertiary data sets
         if (Model.SecondaryData is not null)
         {
-            Dao.SecondaryQuantity = Model.SecondaryData.Quantity.Value;
-            Dao.SecondaryShift = int.Parse(ShiftExtensions.ToString(Model.SecondaryData.Shift));
-            Dao.SecondaryOperator = Model.SecondaryData.Operator.Initials;
+            Dto.SecondaryQuantity = Model.SecondaryData.Quantity.Value;
+            Dto.SecondaryShift = int.Parse(ShiftExtensions.ToString(Model.SecondaryData.Shift));
+            Dto.SecondaryOperator = Model.SecondaryData.Operator.Initials;
         }
         if (Model.TertiaryData is not null)
         {
-            Dao.TertiaryQuantity = Model.TertiaryData.Quantity.Value;
-            Dao.TertiaryShift = int.Parse(ShiftExtensions.ToString(Model.TertiaryData.Shift));
-            Dao.TertiaryOperator = Model.TertiaryData.Operator.Initials;
+            Dto.TertiaryQuantity = Model.TertiaryData.Quantity.Value;
+            Dto.TertiaryShift = int.Parse(ShiftExtensions.ToString(Model.TertiaryData.Shift));
+            Dto.TertiaryOperator = Model.TertiaryData.Operator.Initials;
         }
         // map variable fields
         if (Model.VariableFields.JBKNumber is not null)
         {
-            Dao.JBKNumber = Model.VariableFields.JBKNumber.Literal;
+            Dto.JBKNumber = Model.VariableFields.JBKNumber.Literal;
         }
         if (Model.VariableFields.LotNumber is not null)
         {
-            Dao.JBKNumber = Model.VariableFields.LotNumber.Literal;
+            Dto.JBKNumber = Model.VariableFields.LotNumber.Literal;
         }
         if (Model.VariableFields.DieNumber is not null)
         {
-            Dao.DieNumber = Model.VariableFields.DieNumber.Formatted;
+            Dto.DieNumber = Model.VariableFields.DieNumber.Formatted;
         }
         if (Model.VariableFields.DeburrJBKNumber is not null)
         {
-            Dao.DeburrJBKNumber = Model.VariableFields.DeburrJBKNumber.Literal;
+            Dto.DeburrJBKNumber = Model.VariableFields.DeburrJBKNumber.Literal;
         }
         if (Model.VariableFields.HeatNumber is not null)
         {
-            Dao.HeatNumber = Model.VariableFields.HeatNumber.ToString();
+            Dto.HeatNumber = Model.VariableFields.HeatNumber.ToString();
         }
         // set the ID and return
-        Dao.Id = Model.Id;
-        return Dao;
+        Dto.Id = Model.Id;
+        return Dto;
     }
 }

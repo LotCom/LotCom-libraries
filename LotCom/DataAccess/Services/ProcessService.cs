@@ -27,15 +27,15 @@ public static class ProcessService
             throw;
         }
         string JSON = await Response.Content.ReadAsStringAsync();
-        // deserialize the JSON response and map the data from Dao to Model
-        IEnumerable<ProcessDao>? Daos = JsonConvert.DeserializeObject<IEnumerable<ProcessDao>>(JSON);
-        if (Daos is null)
+        // deserialize the JSON response and map the data from Dto to Model
+        IEnumerable<ProcessDto>? Dtos = JsonConvert.DeserializeObject<IEnumerable<ProcessDto>>(JSON);
+        if (Dtos is null)
         {
             throw new JsonException("Could not deserialize Processes from the response.");
         }
         IEnumerable<Process> Processes = await Task.WhenAll
         (
-            Daos.Select(async x => await ProcessMapper.DaoToModel(x, Agent))
+            Dtos.Select(async x => await ProcessMapper.DtoToModel(x, Agent))
         );
         return Processes;
     }
@@ -61,12 +61,12 @@ public static class ProcessService
             throw;
         }
         string JSON = await Response.Content.ReadAsStringAsync();
-        // deserialize the JSON response and map the data from Dao to Model
-        ProcessDao? Dao = JsonConvert.DeserializeObject<ProcessDao>(JSON);
-        if (Dao is null)
+        // deserialize the JSON response and map the data from Dto to Model
+        ProcessDto? Dto = JsonConvert.DeserializeObject<ProcessDto>(JSON);
+        if (Dto is null)
         {
             throw new JsonException("Could not deserialize a Process from the response.");
         }
-        return await ProcessMapper.DaoToModel(Dao, Agent);
+        return await ProcessMapper.DtoToModel(Dto, Agent);
     }
 }

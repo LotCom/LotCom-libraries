@@ -9,23 +9,23 @@ namespace LotCom.DataAccess.Mappers;
 public static class PartMapper
 {
     /// <summary>
-    /// Maps the values of a Part Dao to a Model object.
+    /// Maps the values of a Part Dto to a Model object.
     /// </summary>
-    /// <param name="Dao"></param>
+    /// <param name="Dto"></param>
     /// <returns></returns>
-    public static Part DaoToModel(PartDao Dao)
+    public static Part DtoToModel(PartDto Dto)
     {
         return new Part
         (
-            Dao.Id,
-            Dao.PrintedBy,
-            Dao.Number,
-            Dao.Name,
-            new ModelNumber(Dao.ModelCode)
+            Dto.Id,
+            Dto.PrintedBy,
+            Dto.Number,
+            Dto.Name,
+            new ModelNumber(Dto.ModelCode)
         );
     }
 
-    public static ProcessDao ModelToDao(Process Model)
+    public static ProcessDto ModelToDto(Process Model)
     {
         throw new NotImplementedException();
     }
