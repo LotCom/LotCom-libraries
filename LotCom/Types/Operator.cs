@@ -12,13 +12,13 @@ public partial class Operator : ObservableObject
     public partial string Initials { get; set; }
 
     /// <summary>
-    /// Confirms that Value is a valid value for this datatype.
+    /// Confirms that Initials is a valid value for this datatype.
     /// </summary>
-    /// <param name="Value"></param>
+    /// <param name="Initials"></param>
     /// <returns></returns>
-    private static bool IsValidValue(string Value)
+    private static bool IsValidValue(string Initials)
     {
-        if (Value is null || !OperatorRegex().IsMatch(Value))
+        if (Initials is null || !OperatorRegex().IsMatch(Initials))
         {
             return false;
         }
@@ -28,11 +28,11 @@ public partial class Operator : ObservableObject
     /// <summary>
     /// Creates a new Operator object to verify ownership of an item.
     /// </summary>
-    /// <param name="Value">The string to use as the Initials of the Operator object.</param>
+    /// <param name="Initials">The string to use as the Initials of the Operator object.</param>
     /// <exception cref="ArgumentException"></exception>
-    public Operator(string Value)
+    public Operator(string Initials)
     {
-        Initials = Value.ToUpper();
+        this.Initials = Initials.ToUpper();
     }
 
     /// <summary>

@@ -15,29 +15,29 @@ public partial class ModelNumber : ObservableObject
     public partial string Code { get; set; }
 
     /// <summary>
-    /// Confirms that Value is a valid value for this datatype.
+    /// Confirms that Code is a valid value for this datatype.
     /// </summary>
-    /// <param name="Value"></param>
+    /// <param name="Code"></param>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="FormatException"></exception>
     /// <returns></returns>
-    private static bool IsValidValue(string Value)
+    private static bool IsValidValue(string Code)
     {
-        return ModelRegex().IsMatch(Value);
+        return ModelRegex().IsMatch(Code);
     }
 
     /// <summary>
     /// Creates a new ModelNumber from Value.
     /// </summary>
-    /// <param name="Value"></param>
-    public ModelNumber(string Value)
+    /// <param name="Code"></param>
+    public ModelNumber(string Code)
     {
         // confirm that Value falls within the allowed code length
-        if (!IsValidValue(Value))
+        if (!IsValidValue(Code))
         {
-            throw new ArgumentException($"'{Value}' is outside the allowed length of codes for the ModelNumber class.", nameof(Value));
+            throw new ArgumentException($"'{Code}' is outside the allowed length of codes for the ModelNumber class.", nameof(Code));
         }
-        Code = Value.ToUpper();
+        this.Code = Code.ToUpper();
     }
 
     /// <summary>
