@@ -1,6 +1,6 @@
+using LotCom.Core.Enums;
+using LotCom.Core.Types;
 using LotCom.DataAccess.Auth;
-using LotCom.Types.Enums;
-using LotCom.Types;
 using Newtonsoft.Json;
 
 namespace LotCom.DataAccess.Services;

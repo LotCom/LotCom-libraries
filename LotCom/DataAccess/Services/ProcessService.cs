@@ -1,7 +1,7 @@
+using LotCom.Core.Models;
 using LotCom.DataAccess.Auth;
 using LotCom.DataAccess.Mappers;
 using LotCom.DataAccess.Models;
-using LotCom.Types;
 using Newtonsoft.Json;
 
 namespace LotCom.DataAccess.Services;

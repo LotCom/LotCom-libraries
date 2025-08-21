@@ -1,7 +1,8 @@
+using LotCom.Core.Models;
+using LotCom.Core.Types;
 using LotCom.DataAccess.Auth;
 using LotCom.DataAccess.Entities;
 using LotCom.DataAccess.Models;
-using LotCom.Types;
 
 namespace LotCom.DataAccess.Mappers;
 
