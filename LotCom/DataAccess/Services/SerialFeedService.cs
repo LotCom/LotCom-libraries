@@ -1,3 +1,4 @@
+using LotCom.DataAccess.Auth;
 using LotCom.Types.Enums;
 using LotCom.Types;
 using Newtonsoft.Json;

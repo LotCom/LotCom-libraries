@@ -1,3 +1,4 @@
+using LotCom.DataAccess.Auth;
 using LotCom.DataAccess.Mappers;
 using LotCom.DataAccess.Models;
 using LotCom.Types;
@@ -7,6 +8,11 @@ namespace LotCom.DataAccess.Services;
 
 public static class ProcessService
 {
+    /// <summary>
+    /// Provides mapping methods.
+    /// </summary>
+    private static ProcessMapper _mapper = new ProcessMapper();
+
     /// <summary>
     /// Retrieves all Processes from the database.
     /// </summary>
@@ -35,7 +41,7 @@ public static class ProcessService
         }
         IEnumerable<Process> Processes = await Task.WhenAll
         (
-            Dtos.Select(async x => await ProcessMapper.DtoToModel(x, Agent))
+            Dtos.Select(async x => await _mapper.DtoToModel(x, Agent))
         );
         return Processes;
     }
@@ -67,6 +73,6 @@ public static class ProcessService
         {
             throw new JsonException("Could not deserialize a Process from the response.");
         }
-        return await ProcessMapper.DtoToModel(Dto, Agent);
+        return await _mapper.DtoToModel(Dto, Agent);
     }
 }

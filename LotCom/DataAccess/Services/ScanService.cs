@@ -1,4 +1,5 @@
 using LotCom.Types;
+using LotCom.DataAccess.Auth;
 using LotCom.DataAccess.Mappers;
 using LotCom.DataAccess.Models;
 using Newtonsoft.Json;
@@ -12,6 +13,11 @@ namespace LotCom.DataAccess.Services;
 /// </summary>
 public static class ScanService
 {
+    /// <summary>
+    /// Provides mapping methods.
+    /// </summary>
+    private static ScanMapper _mapper = new ScanMapper();
+
     /// <summary>
     /// Retrieves all Scans from the Database.
     /// </summary>
@@ -40,7 +46,7 @@ public static class ScanService
         }
         IEnumerable<Scan> Scans = await Task.WhenAll
         (
-            Dtos.Select(async x => await ScanMapper.DtoToModel(x, Agent))
+            Dtos.Select(async x => await _mapper.DtoToModel(x, Agent))
         );
         return Scans;
     }
@@ -73,7 +79,7 @@ public static class ScanService
         }
         IEnumerable<Scan> Scans = await Task.WhenAll
         (
-            Dtos.Select(async x => await ScanMapper.DtoToModel(x, Agent))
+            Dtos.Select(async x => await _mapper.DtoToModel(x, Agent))
         );
         return Scans;
     }
@@ -105,7 +111,7 @@ public static class ScanService
         {
             throw new JsonException("Could not deserialize a Scan from the response.");
         }
-        return await ScanMapper.DtoToModel(Dto, Agent);
+        return await _mapper.DtoToModel(Dto, Agent);
     }
 
     /// <summary>
@@ -141,7 +147,7 @@ public static class ScanService
         }
         IEnumerable<Scan> Scans = await Task.WhenAll
         (
-            Dtos.Select(async x => await ScanMapper.DtoToModel(x, Agent))
+            Dtos.Select(async x => await _mapper.DtoToModel(x, Agent))
         );
         return Scans;
     }
@@ -184,7 +190,7 @@ public static class ScanService
         }
         IEnumerable<Scan> Scans = await Task.WhenAll
         (
-            Dtos.Select(async x => await ScanMapper.DtoToModel(x, Agent))
+            Dtos.Select(async x => await _mapper.DtoToModel(x, Agent))
         );
         return Scans;
     }
@@ -200,7 +206,7 @@ public static class ScanService
     {
         HttpClient Client = HttpClientFactory.Create(Agent);
         // convert the Model into Dto
-        ScanDto Dto = ScanMapper.ModelToDto(Model);
+        ScanDto Dto = _mapper.ModelToDto(Model);
         // convert the Dto into a JSON stream
         JsonContent Content = JsonContent.Create(Dto, new MediaTypeHeaderValue("application/json"));
         // send the PUT request
@@ -241,7 +247,7 @@ public static class ScanService
     {
         HttpClient Client = HttpClientFactory.Create(Agent);
         // convert the Model into Dto
-        ScanDto Dto = ScanMapper.ModelToDto(NewModel);
+        ScanDto Dto = _mapper.ModelToDto(NewModel);
         // convert the Dto into a JSON stream
         JsonContent Content = JsonContent.Create(Dto, new MediaTypeHeaderValue("application/json"));
         // send the PUT request

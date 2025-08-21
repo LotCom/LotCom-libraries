@@ -1,4 +1,5 @@
 using LotCom.Types;
+using LotCom.DataAccess.Auth;
 using LotCom.DataAccess.Mappers;
 using LotCom.DataAccess.Models;
 using Newtonsoft.Json;
@@ -12,6 +13,11 @@ namespace LotCom.DataAccess.Services;
 /// </summary>
 public static class PrintService
 {
+    /// <summary>
+    /// Provides mapping methods.
+    /// </summary>
+    private static PrintMapper _mapper = new PrintMapper();
+
     /// <summary>
     /// Retrieves a single Print from the Database using its Id.
     /// </summary>
@@ -39,7 +45,7 @@ public static class PrintService
         {
             throw new JsonException("Could not deserialize a Print from the response.");
         }
-        return await PrintMapper.DtoToModel(Dto, Agent);
+        return await _mapper.DtoToModel(Dto, Agent);
     }
 
     /// <summary>
@@ -80,7 +86,7 @@ public static class PrintService
         }
         IEnumerable<Print> Prints = await Task.WhenAll
         (
-            Dtos.Select(async x => await PrintMapper.DtoToModel(x, Agent))
+            Dtos.Select(async x => await _mapper.DtoToModel(x, Agent))
         );
         return Prints;
     }
@@ -96,7 +102,7 @@ public static class PrintService
     {
         HttpClient Client = HttpClientFactory.Create(Agent);
         // convert the Model into Dto
-        PrintDto Dto = PrintMapper.ModelToDto(Model);
+        PrintDto Dto = _mapper.ModelToDto(Model);
         // convert the Dto into a JSON stream
         JsonContent Content = JsonContent.Create(Dto, new MediaTypeHeaderValue("application/json"));
         // send the PUT request
@@ -137,7 +143,7 @@ public static class PrintService
     {
         HttpClient Client = HttpClientFactory.Create(Agent);
         // convert the Model into Dto
-        PrintDto Dto = PrintMapper.ModelToDto(NewModel);
+        PrintDto Dto = _mapper.ModelToDto(NewModel);
         // convert the Dto into a JSON stream
         JsonContent Content = JsonContent.Create(Dto, new MediaTypeHeaderValue("application/json"));
         // send the PUT request

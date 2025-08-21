@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using LotCom.DataAccess.Auth;
 using LotCom.DataAccess.Extensions;
 
 namespace LotCom.DataAccess;

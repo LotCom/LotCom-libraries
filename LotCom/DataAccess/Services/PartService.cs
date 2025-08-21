@@ -1,3 +1,4 @@
+using LotCom.DataAccess.Auth;
 using LotCom.DataAccess.Mappers;
 using LotCom.DataAccess.Models;
 using LotCom.Types;
@@ -7,6 +8,11 @@ namespace LotCom.DataAccess.Services;
 
 public static class PartService
 {
+    /// <summary>
+    /// Provides mapping methods.
+    /// </summary>
+    private static PartMapper _mapper = new PartMapper();
+
     /// <summary>
     /// Retrieves a single Part from the database using its Id.
     /// </summary>
@@ -35,7 +41,7 @@ public static class PartService
         {
             throw new JsonException("Could not deserialize a Part from the response.");
         }
-        return PartMapper.DtoToModel(Dto);
+        return await _mapper.DtoToModel(Dto, Agent);
     }
 
     /// <summary>
@@ -66,7 +72,11 @@ public static class PartService
         {
             throw new JsonException("Could not deserialize any Parts from the response.");
         }
-        return Dtos.Select(PartMapper.DtoToModel);
+        IEnumerable<Part> Parts = await Task.WhenAll
+        (
+            Dtos.Select(async x => await _mapper.DtoToModel(x, Agent))
+        );
+        return Parts;
     }
 
     /// <summary>
@@ -97,6 +107,10 @@ public static class PartService
         {
             throw new JsonException("Could not deserialize any Parts from the response.");
         }
-        return Dtos.Select(PartMapper.DtoToModel);
+        IEnumerable<Part> Parts = await Task.WhenAll
+        (
+            Dtos.Select(async x => await _mapper.DtoToModel(x, Agent))
+        );
+        return Parts;
     }
 }
