@@ -72,6 +72,14 @@ public class ProcessMapper : IMapper<Process, ProcessEntity, ProcessDto>
             if (Dto.Previous2 is not null)
             {
                 Model.PreviousProcesses = Model.PreviousProcesses.Append((int)Dto.Previous2);
+                if (Dto.Previous3 is not null)
+                {
+                    Model.PreviousProcesses = Model.PreviousProcesses.Append((int)Dto.Previous3);
+                    if (Dto.Previous4 is not null)
+                    {
+                        Model.PreviousProcesses = Model.PreviousProcesses.Append((int)Dto.Previous4);
+                    }
+                }
             }
         }
         return Model;
@@ -96,7 +104,9 @@ public class ProcessMapper : IMapper<Process, ProcessEntity, ProcessDto>
             Dto.UsesDeburrJBKNumber,
             Dto.UsesHeatNumber,
             Dto.Previous1,
-            Dto.Previous2
+            Dto.Previous2,
+            Dto.Previous3,
+            Dto.Previous4
         );
         Entity.Id = Dto.Id;
         return Entity;
@@ -136,7 +146,9 @@ public class ProcessMapper : IMapper<Process, ProcessEntity, ProcessDto>
             Entity.UsesDeburrJBKNumber,
             Entity.UsesHeatNumber,
             Entity.Previous1,
-            Entity.Previous2
+            Entity.Previous2,
+            Entity.Previous3,
+            Entity.Previous4
         );
         Dto.Id = Entity.Id;
         return Dto;
@@ -160,5 +172,7 @@ public class ProcessMapper : IMapper<Process, ProcessEntity, ProcessDto>
         Recipient.UsesHeatNumber = Source.UsesHeatNumber;
         Recipient.Previous1 = Source.Previous1;
         Recipient.Previous2 = Source.Previous2;
+        Recipient.Previous3 = Source.Previous3;
+        Recipient.Previous4 = Source.Previous4;
     }
 }

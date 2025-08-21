@@ -5,7 +5,7 @@ namespace LotCom.DataAccess.Entities;
 /// <summary>
 /// Defines the Database entity structure of a Process.
 /// </summary>
-public class ProcessEntity(int LineCode, string LineName, string Title, string? Serialization, string Type, bool Origination, string? PassThroughType, bool DoesPrint, bool DoesScan, bool UsesJBKNumber, bool UsesLotNumber, bool UsesDieNumber, bool UsesDeburrJBKNumber, bool UsesHeatNumber, int? Previous1, int? Previous2)
+public class ProcessEntity(int LineCode, string LineName, string Title, string? Serialization, string Type, bool Origination, string? PassThroughType, bool DoesPrint, bool DoesScan, bool UsesJBKNumber, bool UsesLotNumber, bool UsesDieNumber, bool UsesDeburrJBKNumber, bool UsesHeatNumber, int? Previous1, int? Previous2, int? Previous3, int? Previous4)
 {
     // sensitive properties (not transfered by DTO Layer)
     [MaxLength(20)]
@@ -66,4 +66,8 @@ public class ProcessEntity(int LineCode, string LineName, string Title, string? 
     public int? Previous1 { get; set; } = Previous1;
 
     public int? Previous2 { get; set; } = Previous2;
+
+    public int? Previous3 { get; set; } = Previous3;
+
+    public int? Previous4 { get; set; } = Previous4;
 }
