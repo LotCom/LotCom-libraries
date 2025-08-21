@@ -227,28 +227,24 @@ public class PrintMapper : IMapper<Print, PrintEntity, PrintDto>
         return Mapped;
     }
 
-    public PrintEntity EntityToEntity(PrintEntity Entity)
+    public void UpdateEntity(PrintEntity Recipient, PrintEntity Source)
     {
-        PrintEntity New = new PrintEntity
-        (
-            Entity.ProcessId,
-            Entity.PartId,
-            Entity.Quantity,
-            Entity.SecondaryQuantity,
-            Entity.TertiaryQuantity,
-            Entity.Shift,
-            Entity.SecondaryShift,
-            Entity.TertiaryShift,
-            Entity.Operator,
-            Entity.SecondaryOperator,
-            Entity.TertiaryOperator,
-            Entity.JBKNumber,
-            Entity.LotNumber,
-            Entity.DieNumber,
-            Entity.DeburrJBKNumber,
-            Entity.HeatNumber,
-            Entity.ProductionDate
-        );
-        return New;
+        Recipient.ProcessId = Source.ProcessId;
+        Recipient.PartId = Source.PartId;
+        Recipient.Quantity = Source.Quantity;
+        Recipient.SecondaryQuantity = Source.SecondaryQuantity;
+        Recipient.TertiaryQuantity = Source.TertiaryQuantity;
+        Recipient.Shift = Source.Shift;
+        Recipient.SecondaryShift = Source.SecondaryShift;
+        Recipient.TertiaryShift = Source.TertiaryShift;
+        Recipient.Operator = Source.Operator;
+        Recipient.SecondaryOperator = Source.SecondaryOperator;
+        Recipient.TertiaryOperator = Source.TertiaryOperator;
+        Recipient.JBKNumber = Source.JBKNumber;
+        Recipient.LotNumber = Source.LotNumber;
+        Recipient.DieNumber = Source.DieNumber;
+        Recipient.DeburrJBKNumber = Source.DeburrJBKNumber;
+        Recipient.HeatNumber = Source.HeatNumber;
+        Recipient.ProductionDate = Source.ProductionDate;
     }
 }

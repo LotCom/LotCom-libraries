@@ -142,27 +142,23 @@ public class ProcessMapper : IMapper<Process, ProcessEntity, ProcessDto>
         return Dto;
     }
 
-    public ProcessEntity EntityToEntity(ProcessEntity Entity)
+    public void UpdateEntity(ProcessEntity Recipient, ProcessEntity Source)
     {
-        ProcessEntity New = new ProcessEntity
-        (
-            Entity.LineCode,
-            Entity.LineName,
-            Entity.Title,
-            Entity.Serialization,
-            Entity.Type,
-            Entity.Origination,
-            Entity.PassThroughType,
-            Entity.DoesPrint,
-            Entity.DoesScan,
-            Entity.UsesJBKNumber,
-            Entity.UsesLotNumber,
-            Entity.UsesDieNumber,
-            Entity.UsesDeburrJBKNumber,
-            Entity.UsesHeatNumber,
-            Entity.Previous1,
-            Entity.Previous2
-        );
-        return New;
+        Recipient.LineCode = Source.LineCode;
+        Recipient.LineName = Source.LineName;
+        Recipient.Title = Source.Title;
+        Recipient.Serialization = Source.Serialization;
+        Recipient.Type = Source.Type;
+        Recipient.Origination = Source.Origination;
+        Recipient.PassThroughType = Source.PassThroughType;
+        Recipient.DoesPrint = Source.DoesPrint;
+        Recipient.DoesScan = Source.DoesScan;
+        Recipient.UsesJBKNumber = Source.UsesJBKNumber;
+        Recipient.UsesLotNumber = Source.UsesLotNumber;
+        Recipient.UsesDieNumber = Source.UsesDieNumber;
+        Recipient.UsesDeburrJBKNumber = Source.UsesDeburrJBKNumber;
+        Recipient.UsesHeatNumber = Source.UsesHeatNumber;
+        Recipient.Previous1 = Source.Previous1;
+        Recipient.Previous2 = Source.Previous2;
     }
 }

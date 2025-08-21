@@ -68,16 +68,12 @@ public class PartMapper : IMapper<Part, PartEntity, PartDto>
         return Dto;
     }
 
-    public PartEntity EntityToEntity(PartEntity Entity)
+    public void UpdateEntity(PartEntity Recipient, PartEntity Source)
     {
-        PartEntity New = new PartEntity
-        (
-            Entity.Number,
-            Entity.PrintedBy,
-            Entity.ScannedBy,
-            Entity.Name,
-            Entity.ModelCode
-        );
-        return New;
+        Recipient.Number = Source.Number;
+        Recipient.PrintedBy = Source.PrintedBy;
+        Recipient.ScannedBy = Source.ScannedBy;
+        Recipient.Name = Source.Name;
+        Recipient.ModelCode = Source.ModelCode;
     }
 }

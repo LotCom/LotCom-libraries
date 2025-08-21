@@ -63,9 +63,10 @@ public interface IMapper<TModel, TEntity, TDto>
     TDto EntityToDto(TEntity Entity);
     
     /// <summary>
-    /// Maps an Entity's values to a new Entity object (essentially shallow-copying the object).
+    /// Maps an Entity's values (Source) to another Entity object (Recipient), essentially shallow-copying the object.
     /// </summary>
-    /// <param name="Entity"></param>
+    /// <param name="Recipient"></param>
+    /// <param name="Source"></param>
     /// <returns></returns>
-    TEntity EntityToEntity(TEntity Entity);
+    void UpdateEntity(TEntity Recipient, TEntity Source);
 }
