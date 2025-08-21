@@ -6,20 +6,17 @@ using LotCom.Types.Extensions;
 using LotCom.Exceptions;
 using System.Net;
 using Newtonsoft.Json;
+using LotCom.DataAccess.Entities;
+using LotCom.DataAccess.Auth;
 
 namespace LotCom.DataAccess.Mappers;
 
 /// <summary>
-/// Provides value mapping between Scan Data Transfer objects and Model objects.
+/// Provides value mapping between Model, Entity, and DTO objects for Scan classes.
 /// </summary>
-public static class ScanMapper
+public class ScanMapper : IMapper<Scan, ScanEntity, ScanDto>
 {
-    /// <summary>
-    /// Maps the values of a Scan Dto to a Model object.
-    /// </summary>
-    /// <param name="Dto"></param>
-    /// <returns></returns>
-    public static async Task<Scan> DtoToModel(ScanDto Dto, UserAgent Agent)
+    public async Task<Scan> DtoToModel(ScanDto Dto, UserAgent Agent)
     {
         Process? ModelScanProcess;
         Process? ModelLabelProcess;
@@ -164,12 +161,41 @@ public static class ScanMapper
         );
     }
 
-    /// <summary>
-    /// Maps the values of a Model to a Dto object.
-    /// </summary>
-    /// <param name="Model"></param>
-    /// <returns></returns>
-    public static ScanDto ModelToDto(Scan Model)
+    public ScanEntity DtoToEntity(ScanDto Dto)
+    {
+        ScanEntity Entity = new ScanEntity
+        (
+            Dto.ScanProcessId,
+            Dto.ScanDate,
+            Dto.ScanAddress,
+            Dto.LabelProcessId,
+            Dto.PartId,
+            Dto.Quantity,
+            Dto.SecondaryQuantity,
+            Dto.TertiaryQuantity,
+            Dto.Shift,
+            Dto.SecondaryShift,
+            Dto.TertiaryShift,
+            Dto.Operator,
+            Dto.SecondaryOperator,
+            Dto.TertiaryOperator,
+            Dto.JBKNumber,
+            Dto.LotNumber,
+            Dto.DieNumber,
+            Dto.DeburrJBKNumber,
+            Dto.HeatNumber,
+            Dto.ProductionDate
+        );
+        Entity.Id = Dto.Id;
+        return Entity;
+    }
+
+    public ScanDto DtoToDto(ScanDto Dto)
+    {
+        throw new NotImplementedException();
+    }
+
+    public ScanDto ModelToDto(Scan Model)
     {
         // map base data
         ScanDto Dto = new ScanDto
@@ -236,5 +262,67 @@ public static class ScanMapper
         // set the ID and return
         Dto.Id = Model.Id;
         return Dto;
+    }
+
+    public Scan ModelToModel(Scan Model)
+    {
+        throw new NotImplementedException();
+    }
+
+    public ScanDto EntityToDto(ScanEntity Entity)
+    {
+        ScanDto Dto = new ScanDto
+        (
+            Entity.ScanProcessId,
+            Entity.ScanDate,
+            Entity.ScanAddress,
+            Entity.LabelProcessId,
+            Entity.PartId,
+            Entity.Quantity,
+            Entity.SecondaryQuantity,
+            Entity.TertiaryQuantity,
+            Entity.Shift,
+            Entity.SecondaryShift,
+            Entity.TertiaryShift,
+            Entity.Operator,
+            Entity.SecondaryOperator,
+            Entity.TertiaryOperator,
+            Entity.JBKNumber,
+            Entity.LotNumber,
+            Entity.DieNumber,
+            Entity.DeburrJBKNumber,
+            Entity.HeatNumber,
+            Entity.ProductionDate
+        );
+        Dto.Id = Entity.Id;
+        return Dto;
+    }
+
+    public ScanEntity EntityToEntity(ScanEntity Entity)
+    {
+        ScanEntity New = new ScanEntity
+        (
+            Entity.ScanProcessId,
+            Entity.ScanDate,
+            Entity.ScanAddress,
+            Entity.LabelProcessId,
+            Entity.PartId,
+            Entity.Quantity,
+            Entity.SecondaryQuantity,
+            Entity.TertiaryQuantity,
+            Entity.Shift,
+            Entity.SecondaryShift,
+            Entity.TertiaryShift,
+            Entity.Operator,
+            Entity.SecondaryOperator,
+            Entity.TertiaryOperator,
+            Entity.JBKNumber,
+            Entity.LotNumber,
+            Entity.DieNumber,
+            Entity.DeburrJBKNumber,
+            Entity.HeatNumber,
+            Entity.ProductionDate
+        );
+        return New;
     }
 }

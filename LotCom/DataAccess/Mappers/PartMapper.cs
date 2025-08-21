@@ -1,32 +1,83 @@
+using LotCom.DataAccess.Auth;
+using LotCom.DataAccess.Entities;
 using LotCom.DataAccess.Models;
 using LotCom.Types;
 
 namespace LotCom.DataAccess.Mappers;
 
 /// <summary>
-/// Provides value mapping between Part Data Transfer objects and Model objects.
+/// Provides value mapping between Model, Entity, and DTO objects for Part classes.
 /// </summary>
-public static class PartMapper
+public class PartMapper : IMapper<Part, PartEntity, PartDto>
 {
-    /// <summary>
-    /// Maps the values of a Part Dto to a Model object.
-    /// </summary>
-    /// <param name="Dto"></param>
-    /// <returns></returns>
-    public static Part DtoToModel(PartDto Dto)
+    public async Task<Part> DtoToModel(PartDto Dto, UserAgent Agent)
     {
-        return new Part
-        (
-            Dto.Id,
-            Dto.PrintedBy,
-            Dto.Number,
-            Dto.Name,
-            new ModelNumber(Dto.ModelCode)
-        );
+        return await Task.Run(() =>
+        {
+            return new Part
+            (
+                Dto.Id,
+                Dto.PrintedBy,
+                Dto.Number,
+                Dto.Name,
+                new ModelNumber(Dto.ModelCode)
+            );
+        });
     }
 
-    public static ProcessDto ModelToDto(Process Model)
+    public PartEntity DtoToEntity(PartDto Dto)
+    {
+        PartEntity Entity = new PartEntity
+        (
+            Dto.Number,
+            Dto.PrintedBy,
+            Dto.ScannedBy,
+            Dto.Name,
+            Dto.ModelCode
+        );
+        Entity.Id = Dto.Id;
+        return Entity;
+    }
+
+    public PartDto DtoToDto(PartDto Dto)
     {
         throw new NotImplementedException();
+    }
+
+    public PartDto ModelToDto(Part Model)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Part ModelToModel(Part Model)
+    {
+        throw new NotImplementedException();
+    }
+
+    public PartDto EntityToDto(PartEntity Entity)
+    {
+        PartDto Dto = new PartDto
+        (
+            Entity.Number,
+            Entity.PrintedBy,
+            Entity.ScannedBy,
+            Entity.Name,
+            Entity.ModelCode
+        );
+        Dto.Id = Entity.Id;
+        return Dto;
+    }
+
+    public PartEntity EntityToEntity(PartEntity Entity)
+    {
+        PartEntity New = new PartEntity
+        (
+            Entity.Number,
+            Entity.PrintedBy,
+            Entity.ScannedBy,
+            Entity.Name,
+            Entity.ModelCode
+        );
+        return New;
     }
 }

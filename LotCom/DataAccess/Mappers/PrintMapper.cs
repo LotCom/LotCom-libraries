@@ -4,20 +4,17 @@ using LotCom.DataAccess.Services;
 using LotCom.Types;
 using LotCom.Types.Extensions;
 using LotCom.Exceptions;
+using LotCom.DataAccess.Entities;
+using LotCom.DataAccess.Auth;
 
 namespace LotCom.DataAccess.Mappers;
 
 /// <summary>
-/// Provides value mapping between Print Data Transfer objects and Model objects.
+/// Provides value mapping between Model, Entity, and DTO objects for Print classes.
 /// </summary>
-public static class PrintMapper
+public class PrintMapper : IMapper<Print, PrintEntity, PrintDto>
 {
-    /// <summary>
-    /// Maps the values of a Print Dto to a Model object.
-    /// </summary>
-    /// <param name="Dto"></param>
-    /// <returns></returns>
-    public static async Task<Print> DtoToModel(PrintDto Dto, UserAgent Agent)
+    public async Task<Print> DtoToModel(PrintDto Dto, UserAgent Agent)
     {
         // retrieve the Process and Part from the Database
         Process? ModelProcess = await ProcessService.Get(Dto.ProcessId, Agent);
@@ -104,12 +101,38 @@ public static class PrintMapper
         );
     }
 
-    /// <summary>
-    /// Maps the values of a Model to a Dto object.
-    /// </summary>
-    /// <param name="Model"></param>
-    /// <returns></returns>
-    public static PrintDto ModelToDto(Print Model)
+    public PrintEntity DtoToEntity(PrintDto Dto)
+    {
+        PrintEntity Mapped = new PrintEntity
+        (
+            ProcessId: Dto.ProcessId,
+            PartId: Dto.PartId,
+            Quantity: Dto.Quantity,
+            SecondaryQuantity: Dto.SecondaryQuantity,
+            TertiaryQuantity: Dto.TertiaryQuantity,
+            Shift: Dto.Shift,
+            SecondaryShift: Dto.SecondaryShift,
+            TertiaryShift: Dto.TertiaryShift,
+            Operator: Dto.Operator,
+            SecondaryOperator: Dto.SecondaryOperator,
+            TertiaryOperator: Dto.TertiaryOperator,
+            JBKNumber: Dto.JBKNumber,
+            LotNumber: Dto.LotNumber,
+            DieNumber: Dto.DieNumber,
+            DeburrJBKNumber: Dto.DeburrJBKNumber,
+            HeatNumber: Dto.HeatNumber,
+            ProductionDate: Dto.ProductionDate
+        );
+        Mapped.Id = Dto.Id;
+        return Mapped;
+    }
+
+    public PrintDto DtoToDto(PrintDto Dto)
+    {
+        throw new NotImplementedException();
+    }
+
+    public PrintDto ModelToDto(Print Model)
     {
         // map base data
         PrintDto Dto = new PrintDto
@@ -171,5 +194,61 @@ public static class PrintMapper
         // set the ID and return
         Dto.Id = Model.Id;
         return Dto;
+    }
+
+    public Print ModelToModel(Print Model)
+    {
+        throw new NotImplementedException();
+    }
+
+    public PrintDto EntityToDto(PrintEntity Entity)
+    {
+        PrintDto Mapped = new PrintDto
+        (
+            ProcessId: Entity.ProcessId,
+            PartId: Entity.PartId,
+            Quantity: Entity.Quantity,
+            SecondaryQuantity: Entity.SecondaryQuantity,
+            TertiaryQuantity: Entity.TertiaryQuantity,
+            Shift: Entity.Shift,
+            SecondaryShift: Entity.SecondaryShift,
+            TertiaryShift: Entity.TertiaryShift,
+            Operator: Entity.Operator,
+            SecondaryOperator: Entity.SecondaryOperator,
+            TertiaryOperator: Entity.TertiaryOperator,
+            JBKNumber: Entity.JBKNumber,
+            LotNumber: Entity.LotNumber,
+            DieNumber: Entity.DieNumber,
+            DeburrJBKNumber: Entity.DeburrJBKNumber,
+            HeatNumber: Entity.HeatNumber,
+            ProductionDate: Entity.ProductionDate
+        );
+        Mapped.Id = Entity.Id;
+        return Mapped;
+    }
+
+    public PrintEntity EntityToEntity(PrintEntity Entity)
+    {
+        PrintEntity New = new PrintEntity
+        (
+            Entity.ProcessId,
+            Entity.PartId,
+            Entity.Quantity,
+            Entity.SecondaryQuantity,
+            Entity.TertiaryQuantity,
+            Entity.Shift,
+            Entity.SecondaryShift,
+            Entity.TertiaryShift,
+            Entity.Operator,
+            Entity.SecondaryOperator,
+            Entity.TertiaryOperator,
+            Entity.JBKNumber,
+            Entity.LotNumber,
+            Entity.DieNumber,
+            Entity.DeburrJBKNumber,
+            Entity.HeatNumber,
+            Entity.ProductionDate
+        );
+        return New;
     }
 }
