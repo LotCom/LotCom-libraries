@@ -172,4 +172,27 @@ public class Scan(int Id, Process ScanProcess, DateTime ScanDate, IPAddress Scan
         }
         return true;
     }
+    
+    /// <summary>
+    /// Checks if DateToCompare is within 0 and RangeInDays days before the Created Date of this Scan.
+    /// </summary>
+    /// <param name="RangeInDays"></param>
+    /// <param name="DateToCompare"></param>
+    /// <returns></returns>
+    public bool CompareDateWithinRange(int RangeInDays, DateTime DateToCompare)
+    {
+        // subtract the comparison date from the Scan Date
+        TimeSpan Difference = DateToCompare.Subtract(ScanDate);
+        // check if the difference is between 0 and RangeInDays days
+        if (Difference.Days > RangeInDays || Difference.Days < 0)
+        {
+            // either too old or newer than this Scan
+            return false;
+        }
+        // Date to compare was between 0 and RangeInDays days in the past
+        else
+        {
+            return true;
+        }
+    }
 }
