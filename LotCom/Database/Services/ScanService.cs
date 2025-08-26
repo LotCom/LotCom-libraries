@@ -1,5 +1,6 @@
 using LotCom.Core.Models;
 using LotCom.Database.Auth;
+using LotCom.Database.Balancing;
 using LotCom.Database.Mappers;
 using LotCom.Database.Transfer;
 using Newtonsoft.Json;
@@ -17,6 +18,11 @@ public static class ScanService
     /// Provides mapping methods.
     /// </summary>
     private static ScanMapper _mapper = new ScanMapper();
+
+    /// <summary>
+    /// Provides balancing for expensive processing.
+    /// </summary>
+    private static ScanBalancer _balancer = new ScanBalancer();
 
     /// <summary>
     /// Retrieves all Scans from the Database.
@@ -44,10 +50,8 @@ public static class ScanService
         {
             throw new JsonException("Could not deserialize Scans from the response.");
         }
-        IEnumerable<Scan> Scans = await Task.WhenAll
-        (
-            Dtos.Select(async x => await _mapper.DtoToModel(x, Agent))
-        );
+        // convert the DTOs to Models using a balanced process
+        IEnumerable<Scan> Scans = await _balancer.ConvertUsingChunking(Dtos, _mapper, Agent);
         return Scans;
     }
     
@@ -77,10 +81,8 @@ public static class ScanService
         {
             throw new JsonException("Could not deserialize Scans from the response.");
         }
-        IEnumerable<Scan> Scans = await Task.WhenAll
-        (
-            Dtos.Select(async x => await _mapper.DtoToModel(x, Agent))
-        );
+        // convert the DTOs to Models using a balanced process
+        IEnumerable<Scan> Scans = await _balancer.ConvertUsingChunking(Dtos, _mapper, Agent);
         return Scans;
     }
 
@@ -145,10 +147,8 @@ public static class ScanService
         {
             throw new JsonException("Could not deserialize Scans from the response.");
         }
-        IEnumerable<Scan> Scans = await Task.WhenAll
-        (
-            Dtos.Select(async x => await _mapper.DtoToModel(x, Agent))
-        );
+        // convert the DTOs to Models using a balanced process
+        IEnumerable<Scan> Scans = await _balancer.ConvertUsingChunking(Dtos, _mapper, Agent);
         return Scans;
     }
 
@@ -188,10 +188,8 @@ public static class ScanService
         {
             throw new JsonException("Could not deserialize Scans from the response.");
         }
-        IEnumerable<Scan> Scans = await Task.WhenAll
-        (
-            Dtos.Select(async x => await _mapper.DtoToModel(x, Agent))
-        );
+        // convert the DTOs to Models using a balanced process
+        IEnumerable<Scan> Scans = await _balancer.ConvertUsingChunking(Dtos, _mapper, Agent);
         return Scans;
     }
 

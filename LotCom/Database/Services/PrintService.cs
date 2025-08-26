@@ -1,5 +1,6 @@
 using LotCom.Core.Models;
 using LotCom.Database.Auth;
+using LotCom.Database.Balancing;
 using LotCom.Database.Mappers;
 using LotCom.Database.Transfer;
 using Newtonsoft.Json;
@@ -17,6 +18,11 @@ public static class PrintService
     /// Provides mapping methods.
     /// </summary>
     private static PrintMapper _mapper = new PrintMapper();
+
+    /// <summary>
+    /// Provides balancing for expensive processing.
+    /// </summary>
+    private static PrintBalancer _balancer = new PrintBalancer();
 
     /// <summary>
     /// Retrieves a single Print from the Database using its Id.
@@ -84,10 +90,8 @@ public static class PrintService
         {
             throw new JsonException("Could not deserialize Prints from the response.");
         }
-        IEnumerable<Print> Prints = await Task.WhenAll
-        (
-            Dtos.Select(async x => await _mapper.DtoToModel(x, Agent))
-        );
+        // convert the DTOs to Models using a balanced process
+        IEnumerable<Print> Prints = await _balancer.ConvertUsingChunking(Dtos, _mapper, Agent);
         return Prints;
     }
 
