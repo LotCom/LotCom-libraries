@@ -24,7 +24,7 @@ public static class PartService
     {
         // configure a new HttpClient and execute the API call
         HttpClient Client = HttpClientFactory.Create(Agent);
-        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Part/{id}");
+        HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Part/{id}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
         {
@@ -55,7 +55,7 @@ public static class PartService
     {
         // configure a new HttpClient and execute the API call
         HttpClient Client = HttpClientFactory.Create(Agent);
-        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Part/printedById?processId={ProcessId}");
+        HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Part/printedById?processId={ProcessId}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
         {
@@ -90,7 +90,7 @@ public static class PartService
     {
         // configure a new HttpClient and execute the API call
         HttpClient Client = HttpClientFactory.Create(Agent);
-        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Part/scannedById?processId={ProcessId}");
+        HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Part/scannedById?processId={ProcessId}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
         {

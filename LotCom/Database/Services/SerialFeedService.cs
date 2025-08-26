@@ -19,7 +19,7 @@ public static class SerialFeedService
     {
         // configure a new HttpClient and execute the API call
         HttpClient Client = HttpClientFactory.Create(Agent);
-        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Serial/consumeJBKFor?partId={PartId}");
+        HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Serial/consumeJBKFor?partId={PartId}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
         {
@@ -51,7 +51,7 @@ public static class SerialFeedService
     {
         // configure a new HttpClient and execute the API call
         HttpClient Client = HttpClientFactory.Create(Agent);
-        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Serialize/consumeLotFor?partId={PartId}");
+        HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Serialize/consumeLotFor?partId={PartId}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
         {

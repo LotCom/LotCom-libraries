@@ -22,7 +22,7 @@ public static class ProcessService
     public static async Task<IEnumerable<Process>?> GetAll(UserAgent Agent)
     {
         HttpClient Client = HttpClientFactory.Create(Agent);
-        HttpResponseMessage? Response = await Client.GetAsync("http://localhost:60000/Process");
+        HttpResponseMessage? Response = await Client.GetAsync("https://lotcom.yna.us/api/Process");
         // ensure that the response was OK and retrieve its contents as JSON
         try
         {
@@ -56,7 +56,7 @@ public static class ProcessService
     public static async Task<Process?> Get(int id, UserAgent Agent)
     {
         HttpClient Client = HttpClientFactory.Create(Agent);
-        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Process/{id}");
+        HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Process/{id}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
         {

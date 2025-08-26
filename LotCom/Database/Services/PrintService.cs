@@ -28,7 +28,7 @@ public static class PrintService
     public static async Task<Print?> Get(int id, UserAgent Agent)
     {
         HttpClient Client = HttpClientFactory.Create(Agent);
-        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Print/{id}");
+        HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Print/{id}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
         {
@@ -62,7 +62,7 @@ public static class PrintService
         HttpClient Client = HttpClientFactory.Create(Agent);
         HttpResponseMessage? Response = await Client.GetAsync
         (
-            $"http://localhost:60000/Print/onDateBy?" +
+            $"https://lotcom.yna.us/api/Print/onDateBy?" +
             $"day={Date.Day}" +
             $"&month={Date.Month}" +
             $"&year={Date.Year}" +
@@ -108,7 +108,7 @@ public static class PrintService
         // send the PUT request
         HttpResponseMessage Response = await Client.PostAsync
         (
-            $"http://localhost:60000/Print",
+            $"https://lotcom.yna.us/api/Print",
             Content
         );
         // ensure that the response was okay
@@ -149,7 +149,7 @@ public static class PrintService
         // send the PUT request
         HttpResponseMessage Response = await Client.PutAsync
         (
-            $"http://localhost:60000/Print/{TargetId}",
+            $"https://lotcom.yna.us/api/Print/{TargetId}",
             Content
         );
         // ensure that the response was okay

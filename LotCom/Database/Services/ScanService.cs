@@ -27,7 +27,7 @@ public static class ScanService
     public static async Task<IEnumerable<Scan>?> GetAll(UserAgent Agent)
     {
         HttpClient Client = HttpClientFactory.Create(Agent);
-        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Scan");
+        HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Scan");
         // ensure that the response was OK and retrieve its contents as JSON
         try
         {
@@ -60,7 +60,7 @@ public static class ScanService
     public static async Task<IEnumerable<Scan>?> GetAllWithinRange(int WithinDaysOfCurrent, UserAgent Agent)
     {
         HttpClient Client = HttpClientFactory.Create(Agent);
-        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Scan/within?days={WithinDaysOfCurrent}");
+        HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Scan/within?days={WithinDaysOfCurrent}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
         {
@@ -94,7 +94,7 @@ public static class ScanService
     public static async Task<Scan?> Get(int id, UserAgent Agent)
     {
         HttpClient Client = HttpClientFactory.Create(Agent);
-        HttpResponseMessage? Response = await Client.GetAsync($"http://localhost:60000/Scan/{id}");
+        HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Scan/{id}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
         {
@@ -126,7 +126,7 @@ public static class ScanService
         HttpClient Client = HttpClientFactory.Create(Agent);
         HttpResponseMessage? Response = await Client.GetAsync
         (
-            $"http://localhost:60000/Scan/by?" +
+            $"https://lotcom.yna.us/api/Scan/by?" +
             $"&processId={ProcessId}"
         );
         // ensure that the response was OK and retrieve its contents as JSON
@@ -166,7 +166,7 @@ public static class ScanService
         HttpClient Client = HttpClientFactory.Create(Agent);
         HttpResponseMessage? Response = await Client.GetAsync
         (
-            $"http://localhost:60000/Scan/onDateBy?" +
+            $"https://lotcom.yna.us/api/Scan/onDateBy?" +
             $"day={Date.Day}" +
             $"&month={Date.Month}" +
             $"&year={Date.Year}" +
@@ -212,7 +212,7 @@ public static class ScanService
         // send the PUT request
         HttpResponseMessage Response = await Client.PostAsync
         (
-            $"http://localhost:60000/Scan",
+            $"https://lotcom.yna.us/api/Scan",
             Content
         );
         // ensure that the response was okay
@@ -253,7 +253,7 @@ public static class ScanService
         // send the PUT request
         HttpResponseMessage Response = await Client.PutAsync
         (
-            $"http://localhost:60000/Scan/{TargetId}",
+            $"https://lotcom.yna.us/api/Scan/{TargetId}",
             Content
         );
         // ensure that the response was okay
