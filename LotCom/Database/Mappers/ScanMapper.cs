@@ -280,8 +280,8 @@ public class ScanMapper : IMapper<Scan, ScanEntity, ScanDto>
         (
             Entity.ScanProcessId,
             Entity.ScanDate
-                .Replace("%2F", "/")
-                .Replace("%3A", ":"),
+                .Replace("/", "%2F")
+                .Replace(":", "%3A"),
             Entity.ScanAddress,
             Entity.LabelProcessId,
             Entity.PartId,
@@ -300,8 +300,8 @@ public class ScanMapper : IMapper<Scan, ScanEntity, ScanDto>
             Entity.DeburrJBKNumber,
             Entity.HeatNumber,
             Entity.ProductionDate
-                .Replace("%2F", "/")
-                .Replace("%3A", ":")
+                .Replace("/", "%2F")
+                .Replace(":", "%3A")
         );
         Dto.Id = Entity.Id;
         return Dto;

@@ -225,8 +225,8 @@ public class PrintMapper : IMapper<Print, PrintEntity, PrintDto>
             DeburrJBKNumber: Entity.DeburrJBKNumber,
             HeatNumber: Entity.HeatNumber,
             ProductionDate: Entity.ProductionDate
-                .Replace("%2F", "/")
-                .Replace("%3A", ":")
+                .Replace("/", "%2F")
+                .Replace(":", "%3A")
         );
         Mapped.Id = Entity.Id;
         return Mapped;
