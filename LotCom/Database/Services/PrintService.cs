@@ -31,9 +31,8 @@ public static class PrintService
     /// <param name="Agent"></param>
     /// <returns></returns>
     /// <exception cref="JsonException"></exception>
-    public static async Task<Print?> Get(int id, UserAgent Agent)
+    public static async Task<Print?> Get(int id, HttpClient Client, UserAgent Agent)
     {
-        HttpClient Client = HttpClientFactory.Create(Agent);
         HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Print/{id}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
@@ -51,7 +50,7 @@ public static class PrintService
         {
             throw new JsonException("Could not deserialize a Print from the response.");
         }
-        return await _mapper.DtoToModel(Dto, Agent);
+        return await _mapper.DtoToModel(Dto, Client, Agent);
     }
 
     /// <summary>
@@ -63,9 +62,8 @@ public static class PrintService
     /// <returns></returns>
     /// <exception cref="HttpRequestException"></exception>
     /// <exception cref="JsonException"></exception>
-    public static async Task<IEnumerable<Print>?> GetOnDateByProcess(DateTime Date, int ProcessId, UserAgent Agent)
+    public static async Task<IEnumerable<Print>?> GetOnDateByProcess(DateTime Date, int ProcessId, HttpClient Client, UserAgent Agent)
     {
-        HttpClient Client = HttpClientFactory.Create(Agent);
         HttpResponseMessage? Response = await Client.GetAsync
         (
             $"https://lotcom.yna.us/api/Print/onDateBy?" +
@@ -91,7 +89,7 @@ public static class PrintService
             throw new JsonException("Could not deserialize Prints from the response.");
         }
         // convert the DTOs to Models using a balanced process
-        IEnumerable<Print> Prints = await _balancer.ConvertUsingChunking(Dtos, _mapper, Agent);
+        IEnumerable<Print> Prints = await _balancer.ConvertUsingChunking(Dtos, _mapper, Client, Agent);
         return Prints;
     }
 
@@ -102,9 +100,8 @@ public static class PrintService
     /// <param name="Agent"></param>
     /// <returns></returns>
     /// <exception cref="HttpRequestException"></exception>
-    public static async Task<bool> Create(Print Model, UserAgent Agent)
+    public static async Task<bool> Create(Print Model, HttpClient Client, UserAgent Agent)
     {
-        HttpClient Client = HttpClientFactory.Create(Agent);
         // convert the Model into Dto
         PrintDto Dto = _mapper.ModelToDto(Model);
         // convert the Dto into a JSON stream
@@ -143,9 +140,8 @@ public static class PrintService
     /// <param name="Agent"></param>
     /// <returns></returns>
     /// <exception cref="HttpRequestException"></exception>
-    public static async Task<bool> Update(int TargetId, Print NewModel, UserAgent Agent)
+    public static async Task<bool> Update(int TargetId, Print NewModel, HttpClient Client, UserAgent Agent)
     {
-        HttpClient Client = HttpClientFactory.Create(Agent);
         // convert the Model into Dto
         PrintDto Dto = _mapper.ModelToDto(NewModel);
         // convert the Dto into a JSON stream

@@ -30,9 +30,8 @@ public static class ScanService
     /// <param name="Agent"></param>
     /// <returns></returns>
     /// <exception cref="JsonException"></exception>
-    public static async Task<IEnumerable<Scan>?> GetAll(UserAgent Agent)
+    public static async Task<IEnumerable<Scan>?> GetAll(HttpClient Client, UserAgent Agent)
     {
-        HttpClient Client = HttpClientFactory.Create(Agent);
         HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Scan");
         // ensure that the response was OK and retrieve its contents as JSON
         try
@@ -51,7 +50,7 @@ public static class ScanService
             throw new JsonException("Could not deserialize Scans from the response.");
         }
         // convert the DTOs to Models using a balanced process
-        IEnumerable<Scan> Scans = await _balancer.ConvertUsingChunking(Dtos, _mapper, Agent);
+        IEnumerable<Scan> Scans = await _balancer.ConvertUsingChunking(Dtos, _mapper, Client, Agent);
         return Scans;
     }
     
@@ -61,9 +60,8 @@ public static class ScanService
     /// <param name="Agent"></param>
     /// <returns></returns>
     /// <exception cref="JsonException"></exception>
-    public static async Task<IEnumerable<Scan>?> GetAllWithinRange(int WithinDaysOfCurrent, UserAgent Agent)
+    public static async Task<IEnumerable<Scan>?> GetAllWithinRange(int WithinDaysOfCurrent, HttpClient Client, UserAgent Agent)
     {
-        HttpClient Client = HttpClientFactory.Create(Agent);
         HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Scan/within?days={WithinDaysOfCurrent}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
@@ -82,7 +80,7 @@ public static class ScanService
             throw new JsonException("Could not deserialize Scans from the response.");
         }
         // convert the DTOs to Models using a balanced process
-        IEnumerable<Scan> Scans = await _balancer.ConvertUsingChunking(Dtos, _mapper, Agent);
+        IEnumerable<Scan> Scans = await _balancer.ConvertUsingChunking(Dtos, _mapper, Client, Agent);
         return Scans;
     }
 
@@ -93,9 +91,8 @@ public static class ScanService
     /// <param name="Agent"></param>
     /// <returns></returns>
     /// <exception cref="JsonException"></exception>
-    public static async Task<Scan?> Get(int id, UserAgent Agent)
+    public static async Task<Scan?> Get(int id, HttpClient Client, UserAgent Agent)
     {
-        HttpClient Client = HttpClientFactory.Create(Agent);
         HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Scan/{id}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
@@ -113,7 +110,7 @@ public static class ScanService
         {
             throw new JsonException("Could not deserialize a Scan from the response.");
         }
-        return await _mapper.DtoToModel(Dto, Agent);
+        return await _mapper.DtoToModel(Dto, Client, Agent);
     }
 
     /// <summary>
@@ -123,9 +120,8 @@ public static class ScanService
     /// <param name="Agent"></param>
     /// <returns></returns>
     /// <exception cref="JsonException"></exception>
-    public static async Task<IEnumerable<Scan>?> GetAllForProcess(int ProcessId, UserAgent Agent)
+    public static async Task<IEnumerable<Scan>?> GetAllForProcess(int ProcessId, HttpClient Client, UserAgent Agent)
     {
-        HttpClient Client = HttpClientFactory.Create(Agent);
         HttpResponseMessage? Response = await Client.GetAsync
         (
             $"https://lotcom.yna.us/api/Scan/by?" +
@@ -148,7 +144,7 @@ public static class ScanService
             throw new JsonException("Could not deserialize Scans from the response.");
         }
         // convert the DTOs to Models using a balanced process
-        IEnumerable<Scan> Scans = await _balancer.ConvertUsingChunking(Dtos, _mapper, Agent);
+        IEnumerable<Scan> Scans = await _balancer.ConvertUsingChunking(Dtos, _mapper, Client, Agent);
         return Scans;
     }
 
@@ -161,9 +157,8 @@ public static class ScanService
     /// <returns></returns>
     /// <exception cref="HttpRequestException"></exception>
     /// <exception cref="JsonException"></exception>
-    public static async Task<IEnumerable<Scan>?> GetOnDateByProcess(DateTime Date, int ProcessId, UserAgent Agent)
+    public static async Task<IEnumerable<Scan>?> GetOnDateByProcess(DateTime Date, int ProcessId, HttpClient Client, UserAgent Agent)
     {
-        HttpClient Client = HttpClientFactory.Create(Agent);
         HttpResponseMessage? Response = await Client.GetAsync
         (
             $"https://lotcom.yna.us/api/Scan/onDateBy?" +
@@ -189,7 +184,7 @@ public static class ScanService
             throw new JsonException("Could not deserialize Scans from the response.");
         }
         // convert the DTOs to Models using a balanced process
-        IEnumerable<Scan> Scans = await _balancer.ConvertUsingChunking(Dtos, _mapper, Agent);
+        IEnumerable<Scan> Scans = await _balancer.ConvertUsingChunking(Dtos, _mapper, Client, Agent);
         return Scans;
     }
 
@@ -200,9 +195,8 @@ public static class ScanService
     /// <param name="Agent"></param>
     /// <returns></returns>
     /// <exception cref="HttpRequestException"></exception>
-    public static async Task<bool> Create(Scan Model, UserAgent Agent)
+    public static async Task<bool> Create(Scan Model, HttpClient Client, UserAgent Agent)
     {
-        HttpClient Client = HttpClientFactory.Create(Agent);
         // convert the Model into Dto
         ScanDto Dto = _mapper.ModelToDto(Model);
         // convert the Dto into a JSON stream
@@ -241,9 +235,8 @@ public static class ScanService
     /// <param name="Agent"></param>
     /// <returns></returns>
     /// <exception cref="HttpRequestException"></exception>
-    public static async Task<bool> Update(int TargetId, Scan NewModel, UserAgent Agent)
+    public static async Task<bool> Update(int TargetId, Scan NewModel, HttpClient Client, UserAgent Agent)
     {
-        HttpClient Client = HttpClientFactory.Create(Agent);
         // convert the Model into Dto
         ScanDto Dto = _mapper.ModelToDto(NewModel);
         // convert the Dto into a JSON stream

@@ -15,10 +15,9 @@ public static class SerialFeedService
     /// <returns></returns>
     /// <exception cref="HttpRequestException"></exception>
     /// <exception cref="JsonException"></exception>
-    public static async Task<SerialNumber> ConsumeJBKNumber(int PartId, UserAgent Agent)
+    public static async Task<SerialNumber> ConsumeJBKNumber(int PartId, HttpClient Client, UserAgent Agent)
     {
-        // configure a new HttpClient and execute the API call
-        HttpClient Client = HttpClientFactory.Create(Agent);
+        // configure and execute the API call
         HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Serial/consumeJBKFor?partId={PartId}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
@@ -47,10 +46,9 @@ public static class SerialFeedService
     /// <returns></returns>
     /// <exception cref="HttpRequestException"></exception>
     /// <exception cref="JsonException"></exception>
-    public static async Task<SerialNumber> ConsumeLotNumber(int PartId, UserAgent Agent)
+    public static async Task<SerialNumber> ConsumeLotNumber(int PartId, HttpClient Client, UserAgent Agent)
     {
-        // configure a new HttpClient and execute the API call
-        HttpClient Client = HttpClientFactory.Create(Agent);
+        // configure and execute the API call
         HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Serialize/consumeLotFor?partId={PartId}");
         // ensure that the response was OK and retrieve its contents as JSON
         try

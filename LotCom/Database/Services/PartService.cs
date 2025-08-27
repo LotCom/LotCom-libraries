@@ -20,10 +20,9 @@ public static class PartService
     /// <returns></returns>
     /// <exception cref="HttpRequestException"></exception>
     /// <exception cref="JsonException"></exception>
-    public static async Task<Part?> Get(int id, UserAgent Agent)
+    public static async Task<Part?> Get(int id, HttpClient Client, UserAgent Agent)
     {
-        // configure a new HttpClient and execute the API call
-        HttpClient Client = HttpClientFactory.Create(Agent);
+        // configure and execute the API call
         HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Part/{id}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
@@ -41,7 +40,7 @@ public static class PartService
         {
             throw new JsonException("Could not deserialize a Part from the response.");
         }
-        return await _mapper.DtoToModel(Dto, Agent);
+        return await _mapper.DtoToModel(Dto, Client, Agent);
     }
 
     /// <summary>
@@ -51,10 +50,9 @@ public static class PartService
     /// <returns></returns>
     /// <exception cref="HttpRequestException"></exception>
     /// <exception cref="JsonException"></exception>
-    public static async Task<IEnumerable<Part>?> GetPrintedByProcess(int ProcessId, UserAgent Agent)
+    public static async Task<IEnumerable<Part>?> GetPrintedByProcess(int ProcessId, HttpClient Client, UserAgent Agent)
     {
-        // configure a new HttpClient and execute the API call
-        HttpClient Client = HttpClientFactory.Create(Agent);
+        // configure and execute the API call
         HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Part/printedById?processId={ProcessId}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
@@ -74,7 +72,7 @@ public static class PartService
         }
         IEnumerable<Part> Parts = await Task.WhenAll
         (
-            Dtos.Select(async x => await _mapper.DtoToModel(x, Agent))
+            Dtos.Select(async x => await _mapper.DtoToModel(x, Client, Agent))
         );
         return Parts;
     }
@@ -86,10 +84,9 @@ public static class PartService
     /// <returns></returns>
     /// <exception cref="HttpRequestException"></exception>
     /// <exception cref="JsonException"></exception>
-    public static async Task<IEnumerable<Part>?> GetScannedByProcess(int ProcessId, UserAgent Agent)
+    public static async Task<IEnumerable<Part>?> GetScannedByProcess(int ProcessId, HttpClient Client, UserAgent Agent)
     {
-        // configure a new HttpClient and execute the API call
-        HttpClient Client = HttpClientFactory.Create(Agent);
+        // configure and execute the API call
         HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Part/scannedById?processId={ProcessId}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
@@ -109,7 +106,7 @@ public static class PartService
         }
         IEnumerable<Part> Parts = await Task.WhenAll
         (
-            Dtos.Select(async x => await _mapper.DtoToModel(x, Agent))
+            Dtos.Select(async x => await _mapper.DtoToModel(x, Client, Agent))
         );
         return Parts;
     }

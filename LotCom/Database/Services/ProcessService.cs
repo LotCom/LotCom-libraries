@@ -19,9 +19,8 @@ public static class ProcessService
     /// <returns></returns>
     /// <exception cref="HttpRequestException"></exception>
     /// <exception cref="JsonException"></exception>
-    public static async Task<IEnumerable<Process>?> GetAll(UserAgent Agent)
+    public static async Task<IEnumerable<Process>?> GetAll(HttpClient Client, UserAgent Agent)
     {
-        HttpClient Client = HttpClientFactory.Create(Agent);
         HttpResponseMessage? Response = await Client.GetAsync("https://lotcom.yna.us/api/Process");
         // ensure that the response was OK and retrieve its contents as JSON
         try
@@ -41,7 +40,7 @@ public static class ProcessService
         }
         IEnumerable<Process> Processes = await Task.WhenAll
         (
-            Dtos.Select(async x => await _mapper.DtoToModel(x, Agent))
+            Dtos.Select(async x => await _mapper.DtoToModel(x, Client, Agent))
         );
         return Processes;
     }
@@ -53,9 +52,8 @@ public static class ProcessService
     /// <returns></returns>
     /// <exception cref="HttpRequestException"></exception>
     /// <exception cref="JsonException"></exception>
-    public static async Task<Process?> Get(int id, UserAgent Agent)
+    public static async Task<Process?> Get(int id, HttpClient Client, UserAgent Agent)
     {
-        HttpClient Client = HttpClientFactory.Create(Agent);
         HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Process/{id}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
@@ -73,6 +71,6 @@ public static class ProcessService
         {
             throw new JsonException("Could not deserialize a Process from the response.");
         }
-        return await _mapper.DtoToModel(Dto, Agent);
+        return await _mapper.DtoToModel(Dto, Client, Agent);
     }
 }
