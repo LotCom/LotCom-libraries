@@ -70,7 +70,7 @@ public static class ProcessTypeExtensions
         {
             return ProcessType.Deburring;
         }
-        if (String.Equals("Shot-Blasting"))
+        if (String.Equals("Shot-Blasting") || String.Equals("ShotBlasting"))
         {
             return ProcessType.ShotBlasting;
         }
@@ -94,7 +94,7 @@ public static class ProcessTypeExtensions
         {
             return ProcessType.Comping;
         }
-        if (String.Equals("Sub-Assembly"))
+        if (String.Equals("Sub-Assembly") || String.Equals("SubAssembly"))
         {
             return ProcessType.SubAssembly;
         }
