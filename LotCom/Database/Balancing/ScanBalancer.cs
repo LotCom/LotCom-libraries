@@ -11,14 +11,14 @@ public class ScanBalancer : IBalancer<ScanEntity, ScanDto, Scan>
     /// <summary>
     /// The size of chunks to use in Scan chunking processes.
     /// </summary>
-    private const int ChunkSize = 10;
+    private const int ChunkSize = 100;
 
     /// <summary>
     /// The length of time (in milliseconds) to delay between processing batches.
     /// </summary>
     private const int BufferDelay = 1000;
 
-    public async Task<IEnumerable<Scan>> ConvertUsingChunking(IEnumerable<ScanDto> Input, IMapper<Scan, ScanEntity, ScanDto> Mapper, UserAgent Agent)
+    public async Task<IEnumerable<Scan>> ConvertUsingChunking(IEnumerable<ScanDto> Input, IMapper<Scan, ScanEntity, ScanDto> Mapper, HttpClient Client, UserAgent Agent)
     { 
         IEnumerable<Scan> Scans = [];
         // chunk the input
@@ -28,7 +28,7 @@ public class ScanBalancer : IBalancer<ScanEntity, ScanDto, Scan>
             // parse each chunk item asynchronously
             IEnumerable<Scan> _chunkParsed = await Task.WhenAll
             (
-                _chunk.Select(async x => await Mapper.DtoToModel(x, Agent))
+                _chunk.Select(async x => await Mapper.DtoToModel(x, Client, Agent))
             );
             // add all of the scans to the end of the main enumerable
             Scans = Scans.Concat(_chunkParsed);

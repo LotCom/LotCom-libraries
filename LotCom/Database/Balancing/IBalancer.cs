@@ -10,5 +10,5 @@ public interface IBalancer<TEntity, TDto, TModel>
     /// </summary>
     /// <param name="Input"></param>
     /// <returns></returns>
-    Task<IEnumerable<TModel>> ConvertUsingChunking(IEnumerable<TDto> Input, IMapper<TModel, TEntity, TDto> Mapper, UserAgent Agent);
+    Task<IEnumerable<TModel>> ConvertUsingChunking(IEnumerable<TDto> Input, IMapper<TModel, TEntity, TDto> Mapper, HttpClient Client, UserAgent Agent);
 }

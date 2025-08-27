@@ -11,14 +11,14 @@ public class PrintBalancer : IBalancer<PrintEntity, PrintDto, Print>
     /// <summary>
     /// The size of chunks to use in Print chunking processes.
     /// </summary>
-    private const int ChunkSize = 10;
+    private const int ChunkSize = 100;
 
     /// <summary>
     /// The length of time (in milliseconds) to delay between processing batches.
     /// </summary>
     private const int BufferDelay = 1000;
 
-    public async Task<IEnumerable<Print>> ConvertUsingChunking(IEnumerable<PrintDto> Input, IMapper<Print, PrintEntity, PrintDto> Mapper, UserAgent Agent)
+    public async Task<IEnumerable<Print>> ConvertUsingChunking(IEnumerable<PrintDto> Input, IMapper<Print, PrintEntity, PrintDto> Mapper, HttpClient Client, UserAgent Agent)
     {
         IEnumerable<Print> Prints = [];
         // chunk the input
@@ -28,7 +28,7 @@ public class PrintBalancer : IBalancer<PrintEntity, PrintDto, Print>
             // parse each chunk item asynchronously
             IEnumerable<Print> _chunkParsed = await Task.WhenAll
             (
-                _chunk.Select(async x => await Mapper.DtoToModel(x, Agent))
+                _chunk.Select(async x => await Mapper.DtoToModel(x, Client, Agent))
             );
             // add all of the prints to the end of the main enumerable
             Prints = Prints.Concat(_chunkParsed);
