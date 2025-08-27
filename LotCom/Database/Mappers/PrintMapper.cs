@@ -15,11 +15,11 @@ namespace LotCom.Database.Mappers;
 /// </summary>
 public class PrintMapper : IMapper<Print, PrintEntity, PrintDto>
 {
-    public async Task<Print> DtoToModel(PrintDto Dto, UserAgent Agent)
+    public async Task<Print> DtoToModel(PrintDto Dto, HttpClient Client, UserAgent Agent)
     {
         // retrieve the Process and Part from the Database
-        Process? ModelProcess = await ProcessService.Get(Dto.ProcessId, Agent);
-        Part? ModelPart = await PartService.Get(Dto.PartId, Agent);
+        Process? ModelProcess = await ProcessService.Get(Dto.ProcessId, Client, Agent);
+        Part? ModelPart = await PartService.Get(Dto.PartId, Client, Agent);
         if (ModelProcess is null)
         {
             throw new DatabaseException("Could not retrieve the Process referenced by the Print.");

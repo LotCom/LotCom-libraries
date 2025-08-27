@@ -12,7 +12,7 @@ namespace LotCom.Database.Mappers;
 /// </summary>
 public class ProcessMapper : IMapper<Process, ProcessEntity, ProcessDto>
 {
-    public async Task<Process> DtoToModel(ProcessDto Dto, UserAgent Agent)
+    public async Task<Process> DtoToModel(ProcessDto Dto, HttpClient Client, UserAgent Agent)
     {
         // map native/simple typed properties
         Process Model = new Process
@@ -42,7 +42,7 @@ public class ProcessMapper : IMapper<Process, ProcessEntity, ProcessDto>
         // retrieve printable part ids for the Process
         if (Model.Prints)
         {
-            IEnumerable<Part>? PartsFromDatabase = await PartService.GetPrintedByProcess(Dto.Id, Agent);
+            IEnumerable<Part>? PartsFromDatabase = await PartService.GetPrintedByProcess(Dto.Id, Client, Agent);
             if (PartsFromDatabase is null)
             {
                 Model.PrintParts = [];
@@ -55,7 +55,7 @@ public class ProcessMapper : IMapper<Process, ProcessEntity, ProcessDto>
         // retrieve scannable part ids for the Process
         if (Model.Scans)
         {
-            IEnumerable<Part>? PartsFromDatabase = await PartService.GetScannedByProcess(Dto.Id, Agent);
+            IEnumerable<Part>? PartsFromDatabase = await PartService.GetScannedByProcess(Dto.Id, Client, Agent);
             if (PartsFromDatabase is null)
             {
                 Model.ScanParts = [];

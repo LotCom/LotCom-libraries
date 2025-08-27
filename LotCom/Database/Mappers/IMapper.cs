@@ -22,7 +22,7 @@ public interface IMapper<TModel, TEntity, TDto>
     /// <param name="Dto"></param>
     /// <param name="Agent"></param>
     /// <returns></returns>
-    Task<TModel> DtoToModel(TDto Dto, UserAgent Agent);
+    Task<TModel> DtoToModel(TDto Dto, HttpClient Client, UserAgent Agent);
     
     /// <summary>
     /// Maps a DTO's values to a new Entity object.

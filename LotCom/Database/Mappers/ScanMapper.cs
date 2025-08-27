@@ -17,7 +17,7 @@ namespace LotCom.Database.Mappers;
 /// </summary>
 public class ScanMapper : IMapper<Scan, ScanEntity, ScanDto>
 {
-    public async Task<Scan> DtoToModel(ScanDto Dto, UserAgent Agent)
+    public async Task<Scan> DtoToModel(ScanDto Dto, HttpClient Client, UserAgent Agent)
     {
         Process? ModelScanProcess;
         Process? ModelLabelProcess;
@@ -25,7 +25,7 @@ public class ScanMapper : IMapper<Scan, ScanEntity, ScanDto>
         // retrieve the ScanProcess from the Database
         try
         {
-            ModelScanProcess = await ProcessService.Get(Dto.ScanProcessId, Agent);
+            ModelScanProcess = await ProcessService.Get(Dto.ScanProcessId, Client, Agent);
         }
         // some database-generated issue
         catch (HttpRequestException _ex)
@@ -40,7 +40,7 @@ public class ScanMapper : IMapper<Scan, ScanEntity, ScanDto>
         // retrieve the LabelProcess from the Database
         try
         {
-            ModelLabelProcess = await ProcessService.Get(Dto.LabelProcessId, Agent);
+            ModelLabelProcess = await ProcessService.Get(Dto.LabelProcessId, Client, Agent);
         }
         // some database-generated issue
         catch (HttpRequestException _ex)
@@ -55,7 +55,7 @@ public class ScanMapper : IMapper<Scan, ScanEntity, ScanDto>
         // retrieve the LabelPart from the Database
         try
         {
-            ModelPart = await PartService.Get(Dto.PartId, Agent);
+            ModelPart = await PartService.Get(Dto.PartId, Client, Agent);
         }
         // some database-generated issue
         catch (HttpRequestException _ex)

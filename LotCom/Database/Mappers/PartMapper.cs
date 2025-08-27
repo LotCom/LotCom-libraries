@@ -11,7 +11,7 @@ namespace LotCom.Database.Mappers;
 /// </summary>
 public class PartMapper : IMapper<Part, PartEntity, PartDto>
 {
-    public async Task<Part> DtoToModel(PartDto Dto, UserAgent Agent)
+    public async Task<Part> DtoToModel(PartDto Dto, HttpClient Client, UserAgent Agent)
     {
         return await Task.Run(() =>
         {
