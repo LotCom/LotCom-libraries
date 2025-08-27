@@ -2,7 +2,7 @@ using System.Net.Http.Headers;
 using LotCom.Database.Auth;
 using LotCom.Database.Extensions;
 
-namespace LotCom.Database;
+namespace LotCom.Database.Http;
 
 /// <summary>
 /// Provides controlled creation of HttpClient objects that meet the standards of the LotCom API.
@@ -14,7 +14,13 @@ public static class HttpClientFactory
     /// </summary>
     public static HttpClient Create(UserAgent Agent)
     {
-        HttpClient Client = new HttpClient();
+        Console.WriteLine("Creating a new HttpClient...");
+        // create a socket handler that limits the Client's pool timeout to 2 minutes
+        SocketsHttpHandler LimitedHandler = new SocketsHttpHandler
+        {
+            PooledConnectionLifetime = TimeSpan.FromMinutes(2)
+        };
+        HttpClient Client = new HttpClient(LimitedHandler);
         // cleans the HttpClient's accepted response header configuration
         Client.DefaultRequestHeaders.Accept.Clear();
         // adds the default API response header to the accepted response configuration
