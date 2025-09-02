@@ -49,7 +49,7 @@ public static class SerialFeedService
     public static async Task<SerialNumber> ConsumeLotNumber(int PartId, HttpClient Client, UserAgent Agent)
     {
         // configure and execute the API call
-        HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Serialize/consumeLotFor?partId={PartId}");
+        HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Serial/consumeLotFor?partId={PartId}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
         {
