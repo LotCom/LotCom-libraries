@@ -33,6 +33,7 @@ public static class PrintService
     /// <exception cref="JsonException"></exception>
     public static async Task<Print?> Get(int id, HttpClient Client, UserAgent Agent)
     {
+        Console.WriteLine($"API GET Print {id}");
         HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Print/{id}");
         // ensure that the response was OK and retrieve its contents as JSON
         try
@@ -64,6 +65,7 @@ public static class PrintService
     /// <exception cref="JsonException"></exception>
     public static async Task<IEnumerable<Print>?> GetOnDateByProcess(DateTime Date, int ProcessId, HttpClient Client, UserAgent Agent)
     {
+        Console.WriteLine($"API GET Prints on {Date.Date} by {ProcessId}");
         HttpResponseMessage? Response = await Client.GetAsync
         (
             $"https://lotcom.yna.us/api/Print/onDateBy?" +
@@ -88,8 +90,66 @@ public static class PrintService
         {
             throw new JsonException("Could not deserialize Prints from the response.");
         }
-        // convert the DTOs to Models using a balanced process
-        IEnumerable<Print> Prints = await _balancer.ConvertUsingChunking(Dtos, _mapper, Client, Agent);
+        // convert the DTOs to Models
+        IEnumerable<Print> Prints = [];
+        foreach (PrintDto _dto in Dtos)
+        {
+            Prints = Prints.Append(await _mapper.DtoToModel(_dto, Client, Agent));
+        }
+        return Prints;
+    }
+
+    /// <summary>
+    /// Retrieves all Prints that contain serialNumber in their Serial Number (JBK/Lot) field.
+    /// </summary>
+    /// <param name="serialNumber"></param>
+    /// <param name="Client"></param>
+    /// <param name="Agent"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="JsonException"></exception>
+    public static async Task<IEnumerable<Print>?> GetWithSerialNumber(object serialNumber, HttpClient Client, UserAgent Agent)
+    {
+        Console.WriteLine($"API GET Prints with serial {serialNumber}");
+        int Serial;
+        if (serialNumber.GetType().Equals(typeof(int)))
+        {
+            Serial = (int)serialNumber;
+        }
+        else if (serialNumber.GetType().Equals(typeof(string)))
+        {
+            Serial = int.Parse((string)serialNumber);
+        }
+        else
+        {
+            throw new ArgumentException($"Cannot query for a Serial Number using an object of type {serialNumber.GetType()}", nameof(serialNumber));
+        }
+        HttpResponseMessage? Response = await Client.GetAsync
+        (
+            $"https://lotcom.yna.us/api/Print/serialNumber?serialNumber={Serial}"
+        );
+        // ensure that the response was OK and retrieve its contents as JSON
+        try
+        {
+            Response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException)
+        {
+            throw;
+        }
+        string JSON = await Response.Content.ReadAsStringAsync();
+        // deserialize the JSON response and map the data from Dto to Model
+        IEnumerable<PrintDto>? Dtos = JsonConvert.DeserializeObject<IEnumerable<PrintDto>>(JSON);
+        if (Dtos is null)
+        {
+            throw new JsonException("Could not deserialize Prints from the response.");
+        }
+        // convert the DTOs to Models
+        IEnumerable<Print> Prints = [];
+        foreach (PrintDto _dto in Dtos)
+        {
+            Prints = Prints.Append(await _mapper.DtoToModel(_dto, Client, Agent));
+        }
         return Prints;
     }
 
@@ -102,6 +162,7 @@ public static class PrintService
     /// <exception cref="HttpRequestException"></exception>
     public static async Task<bool> Create(Print Model, HttpClient Client, UserAgent Agent)
     {
+        Console.WriteLine($"API POST Print");
         // convert the Model into Dto
         PrintDto Dto = _mapper.ModelToDto(Model);
         // convert the Dto into a JSON stream
@@ -142,6 +203,7 @@ public static class PrintService
     /// <exception cref="HttpRequestException"></exception>
     public static async Task<bool> Update(int TargetId, Print NewModel, HttpClient Client, UserAgent Agent)
     {
+        Console.WriteLine($"API PUT Print {TargetId}");
         // convert the Model into Dto
         PrintDto Dto = _mapper.ModelToDto(NewModel);
         // convert the Dto into a JSON stream
