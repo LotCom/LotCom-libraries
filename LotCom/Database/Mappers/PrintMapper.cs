@@ -7,6 +7,8 @@ using LotCom.Core.Exceptions;
 using LotCom.Core.Types;
 using LotCom.Core.Extensions;
 using LotCom.Database.Transfer;
+using LotCom.Database.Caching;
+using Newtonsoft.Json;
 
 namespace LotCom.Database.Mappers;
 
@@ -15,18 +17,78 @@ namespace LotCom.Database.Mappers;
 /// </summary>
 public class PrintMapper : IMapper<Print, PrintEntity, PrintDto>
 {
+    /// <summary>
+    /// Provides a cache mechanism for storing retrieved Parts.
+    /// </summary>
+    private PartCache _partCache = new PartCache();
+
+    /// <summary>
+    /// Provides a cache mechanism for storing retrieved Processes.
+    /// </summary>
+    private ProcessCache _processCache = new ProcessCache();
+
     public async Task<Print> DtoToModel(PrintDto Dto, HttpClient Client, UserAgent Agent)
     {
-        // retrieve the Process and Part from the Database
-        Process? ModelProcess = await ProcessService.Get(Dto.ProcessId, Client, Agent);
-        Part? ModelPart = await PartService.Get(Dto.PartId, Client, Agent);
+        Process? ModelProcess;
+        Part? ModelPart;
+        // retrieve the Process from the Database
+        try
+        {
+            // check in the cache
+            ModelProcess = _processCache.Get(Dto.ProcessId);
+            if (ModelProcess is null)
+            {
+                ModelProcess = await ProcessService.Get(Dto.ProcessId, Client, Agent);
+            }
+        }
+        // some database-generated issue
+        catch (HttpRequestException _ex)
+        {
+            throw new DatabaseException($"Could not retreive Process {Dto.ProcessId} from the Database.", _ex);
+        }
+        // some formatting issue
+        catch (JsonException _ex)
+        {
+            throw new DatabaseException("Could not process JSON response.", _ex);
+        }
+        // retrieve the Part from the Database
+        try
+        {
+            // check in the cache
+            ModelPart = _partCache.Get(Dto.PartId);
+            if (ModelPart is null)
+            {
+                ModelPart = await PartService.Get(Dto.PartId, Client, Agent);
+            }
+        }
+        // some database-generated issue
+        catch (HttpRequestException _ex)
+        {
+            throw new DatabaseException($"Could not retreive Part {Dto.PartId} from the Database.", _ex);
+        }
+        // some formatting issue
+        catch (JsonException _ex)
+        {
+            throw new DatabaseException("Could not process JSON response.", _ex);
+        }
+        // confirm that the Process and Parts were retrieved and/or existed
         if (ModelProcess is null)
         {
-            throw new DatabaseException("Could not retrieve the Process referenced by the Print.");
+            throw new DatabaseException("Could not retrieve the Process that created the Scan.");
+        }
+        else
+        {
+            // cache the Process
+            _processCache.Add(ModelProcess);
         }
         if (ModelPart is null)
         {
-            throw new DatabaseException("Could not retrieve the Part referenced by the Print.");
+            throw new DatabaseException("Could not retrieve the Part referenced by the Scan.");
+        }
+        else
+        {
+            // cache the Part
+            _partCache.Add(ModelPart);
         }
         // map any non-null variable fields
         VariableFieldSet ModelVariableFields = new VariableFieldSet();

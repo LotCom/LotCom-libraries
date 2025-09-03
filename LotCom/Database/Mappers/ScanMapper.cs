@@ -9,6 +9,7 @@ using LotCom.Core.Exceptions;
 using LotCom.Core.Types;
 using LotCom.Core.Extensions;
 using LotCom.Database.Transfer;
+using LotCom.Database.Caching;
 
 namespace LotCom.Database.Mappers;
 
@@ -17,6 +18,16 @@ namespace LotCom.Database.Mappers;
 /// </summary>
 public class ScanMapper : IMapper<Scan, ScanEntity, ScanDto>
 {
+    /// <summary>
+    /// Provides a cache mechanism for storing retrieved Parts.
+    /// </summary>
+    private PartCache _partCache = new PartCache();
+
+    /// <summary>
+    /// Provides a cache mechanism for storing retrieved Processes.
+    /// </summary>
+    private ProcessCache _processCache = new ProcessCache();
+
     public async Task<Scan> DtoToModel(ScanDto Dto, HttpClient Client, UserAgent Agent)
     {
         Process? ModelScanProcess;
@@ -25,7 +36,12 @@ public class ScanMapper : IMapper<Scan, ScanEntity, ScanDto>
         // retrieve the ScanProcess from the Database
         try
         {
-            ModelScanProcess = await ProcessService.Get(Dto.ScanProcessId, Client, Agent);
+            // check in the cache
+            ModelScanProcess = _processCache.Get(Dto.ScanProcessId);
+            if (ModelScanProcess is null)
+            {
+                ModelScanProcess = await ProcessService.Get(Dto.ScanProcessId, Client, Agent);
+            }
         }
         // some database-generated issue
         catch (HttpRequestException _ex)
@@ -40,7 +56,12 @@ public class ScanMapper : IMapper<Scan, ScanEntity, ScanDto>
         // retrieve the LabelProcess from the Database
         try
         {
-            ModelLabelProcess = await ProcessService.Get(Dto.LabelProcessId, Client, Agent);
+            // check in the cache
+            ModelLabelProcess = _processCache.Get(Dto.LabelProcessId);
+            if (ModelLabelProcess is null)
+            {
+                ModelLabelProcess = await ProcessService.Get(Dto.LabelProcessId, Client, Agent);
+            }
         }
         // some database-generated issue
         catch (HttpRequestException _ex)
@@ -55,7 +76,12 @@ public class ScanMapper : IMapper<Scan, ScanEntity, ScanDto>
         // retrieve the LabelPart from the Database
         try
         {
-            ModelPart = await PartService.Get(Dto.PartId, Client, Agent);
+            // check in the cache
+            ModelPart = _partCache.Get(Dto.PartId);
+            if (ModelPart is null)
+            {
+                ModelPart = await PartService.Get(Dto.PartId, Client, Agent);
+            }
         }
         // some database-generated issue
         catch (HttpRequestException _ex)
@@ -67,17 +93,33 @@ public class ScanMapper : IMapper<Scan, ScanEntity, ScanDto>
         {
             throw new DatabaseException("Could not process JSON response.", _ex);
         }
+        // confirm that the Processes and Parts were retrieved and/or existed
         if (ModelScanProcess is null)
         {
             throw new DatabaseException("Could not retrieve the Process that created the Scan.");
+        }
+        else
+        {
+            // cache the Process
+            _processCache.Add(ModelScanProcess);
         }
         if (ModelLabelProcess is null)
         {
             throw new DatabaseException("Could not retrieve the Process referenced by the Scan.");
         }
+        else
+        {
+            // cache the Process
+            _processCache.Add(ModelLabelProcess);
+        }
         if (ModelPart is null)
         {
             throw new DatabaseException("Could not retrieve the Part referenced by the Scan.");
+        }
+        else
+        {
+            // cache the Part
+            _partCache.Add(ModelPart);
         }
         // map any non-null variable fields
         VariableFieldSet ModelVariableFields = new VariableFieldSet();
