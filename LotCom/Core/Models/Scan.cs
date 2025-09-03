@@ -97,7 +97,7 @@ public class Scan(int Id, Process ScanProcess, DateTime ScanDate, IPAddress Scan
     }
 
     /// <summary>
-    /// Compares two Scans as "identical" events, meaning the Serial, Part, and Date match.
+    /// Compares two Scans as "identical" events, meaning the Process, Serial, and Part match and Dates are within 60 days of each other.
     /// </summary>
     /// <param name="Comparison"></param>
     /// <returns></returns>
@@ -108,11 +108,17 @@ public class Scan(int Id, Process ScanProcess, DateTime ScanDate, IPAddress Scan
         {
             return false;
         }
-        else if (ProductionDate.CompareTo(Comparison.ProductionDate) != 0)
+        else if (Part.Id != Comparison.Part.Id)
         {
             return false;
         }
         else if (!GetSerialNumber().Value.Equals(Comparison.GetSerialNumber().Value))
+        {
+            return false;
+        }
+        // Comparison ScanDate must be between 0 and 60 days before this Scan's ScanDate
+        TimeSpan ElapsedTime = ScanDate.Subtract(Comparison.ScanDate);
+        if (ElapsedTime.Days < 0 || ElapsedTime.Days > 60)
         {
             return false;
         }
