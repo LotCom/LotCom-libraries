@@ -14,6 +14,39 @@ public static class PartService
     private static PartMapper _mapper = new PartMapper();
 
     /// <summary>
+    /// Retrieves all Parts from the database.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="HttpRequestException"></exception>
+    /// <exception cref="JsonException"></exception>
+    public static async Task<IEnumerable<Part>?> GetAll(HttpClient Client, UserAgent Agent)
+    {
+        Console.WriteLine($"API GET Parts");
+        HttpResponseMessage? Response = await Client.GetAsync("https://lotcom.yna.us/api/Part");
+        // ensure that the response was OK and retrieve its contents as JSON
+        try
+        {
+            Response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException)
+        {
+            throw;
+        }
+        string JSON = await Response.Content.ReadAsStringAsync();
+        // deserialize the JSON response and map the data from Dto to Model
+        IEnumerable<PartDto>? Dtos = JsonConvert.DeserializeObject<IEnumerable<PartDto>>(JSON);
+        if (Dtos is null)
+        {
+            throw new JsonException("Could not deserialize Parts from the response.");
+        }
+        IEnumerable<Part> Parts = await Task.WhenAll
+        (
+            Dtos.Select(async x => await _mapper.DtoToModel(x, Client, Agent))
+        );
+        return Parts;
+    }
+
+    /// <summary>
     /// Retrieves a single Part from the database using its Id.
     /// </summary>
     /// <param name="id">The Part object's Id number.</param>
@@ -22,6 +55,7 @@ public static class PartService
     /// <exception cref="JsonException"></exception>
     public static async Task<Part?> Get(int id, HttpClient Client, UserAgent Agent)
     {
+        Console.WriteLine($"API GET Part {id}");
         // configure and execute the API call
         HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Part/{id}");
         // ensure that the response was OK and retrieve its contents as JSON
@@ -52,6 +86,7 @@ public static class PartService
     /// <exception cref="JsonException"></exception>
     public static async Task<IEnumerable<Part>?> GetPrintedByProcess(int ProcessId, HttpClient Client, UserAgent Agent)
     {
+        Console.WriteLine($"API GET Parts printed by {ProcessId}");
         // configure and execute the API call
         HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Part/printedById?processId={ProcessId}");
         // ensure that the response was OK and retrieve its contents as JSON
@@ -86,6 +121,7 @@ public static class PartService
     /// <exception cref="JsonException"></exception>
     public static async Task<IEnumerable<Part>?> GetScannedByProcess(int ProcessId, HttpClient Client, UserAgent Agent)
     {
+        Console.WriteLine($"API GET Parts scanned by {ProcessId}");
         // configure and execute the API call
         HttpResponseMessage? Response = await Client.GetAsync($"https://lotcom.yna.us/api/Part/scannedById?processId={ProcessId}");
         // ensure that the response was OK and retrieve its contents as JSON
