@@ -17,7 +17,7 @@ public class PrintEntity(int ProcessId, int PartId, int Quantity, int? Secondary
     // open properties (transfered by DTO Layer)
     [Key]
     public int Id { get; set; } = 0;
-    
+
     [Required]
     public int ProcessId { get; set; } = ProcessId;
 
@@ -62,4 +62,33 @@ public class PrintEntity(int ProcessId, int PartId, int Quantity, int? Secondary
 
     [Required]
     public string ProductionDate { get; set; } = ProductionDate;
+    
+    /// <summary>
+    /// Returns the PrintEntity's serial number, as an unformatted literal.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="FormatException"></exception>
+    public int? GetSerialNumber()
+    {
+        // use the JBK number
+        if (JBKNumber is not null)
+        {
+            return (int)JBKNumber;
+        }
+        // use the Lot number
+        else if (LotNumber is not null)
+        {
+            return int.Parse(LotNumber);
+        }
+        // use the DeburrJBKNumber
+        else if (DeburrJBKNumber is not null)
+        {
+            return (int)DeburrJBKNumber;
+        }
+        // no number available
+        else
+        {
+            return null;
+        }
+    }
 }

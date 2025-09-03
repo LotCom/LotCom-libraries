@@ -74,6 +74,35 @@ public class ScanEntity(int ScanProcessId, string ScanDate, string ScanAddress, 
 
     [Required]
     public string ProductionDate { get; set; } = ProductionDate;
+    
+    /// <summary>
+    /// Returns the ScanEntity's serial number, as an unformatted literal.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="FormatException"></exception>
+    public int? GetSerialNumber()
+    {
+        // use the JBK number
+        if (JBKNumber is not null)
+        {
+            return (int)JBKNumber;
+        }
+        // use the Lot number
+        else if (LotNumber is not null)
+        {
+            return int.Parse(LotNumber);
+        }
+        // use the DeburrJBKNumber
+        else if (DeburrJBKNumber is not null)
+        {
+            return (int)DeburrJBKNumber;
+        }
+        // no number available
+        else
+        {
+            return null;
+        }
+    }
 
     /// <summary>
     /// Checks if DateToCompare is within 0 and RangeInDays days before the Created Date of this Scan.
